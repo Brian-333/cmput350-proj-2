@@ -47,7 +47,8 @@ public:
         assert(valid(index));
         mFreeList.push_back(index);
         mValid[index] = true;
-        mStorage[index] = T{};
+        // Not resetting the value to avoid unnecessary construction/destruction
+        // mStorage[index] = T{};
     }
 
     T& operator[](std::size_t index) {
