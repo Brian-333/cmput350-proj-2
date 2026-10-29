@@ -12,14 +12,14 @@ void TestEntityManager() {
     assert(floatComponentStorage.size() == 0);
 
     // Add a component to the entity
-    entityManager.AddComponent<int>(entity, 1);
+    entityManager.AddComponent(entity, 1);
 
     // Check that the component was added
     assert(entityManager.HasComponent<int>(entity));
     assert(entityManager.GetComponent<int>(entity) == 1);
 
     // Add a float component to the entity
-    entityManager.AddComponent<float>(entity, 2.0f);
+    entityManager.AddComponent(entity, 2.0f);
 
     // Check that the components were added
     assert(entityManager.HasComponent<int>(entity));
@@ -44,6 +44,17 @@ void TestEntityManager() {
     // Check that the component was removed
     assert(!entityManager.HasComponent<float>(entity));
     assert(floatComponentStorage.size() == 0);
+
+    // Remove the entity
+    entityManager.AddComponent(entity, 3);
+    entityManager.AddComponent(entity, 4.0f);
+    entityManager.AddComponent(entity, 'c');
+    entityManager.RemoveEntity(entity);
+
+    // Check that the entity was removed
+    assert(entityManager.GetComponentStorage<int>().size() == 0);
+    assert(entityManager.GetComponentStorage<float>().size() == 0);
+    assert(entityManager.GetComponentStorage<char>().size() == 0);
 
     std::cout << "EntityManager test passed" << std::endl;
 }
