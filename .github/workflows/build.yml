@@ -26,5 +26,12 @@ jobs:
               libfreetype-dev
       - name: Configure
         run: cmake --preset debug
+
+      - name: Build ECS Engine Tests
+        run: cmake --build build --target EngineTest
+
+      - name: Run ECS Engine Tests
+        run: ./build/engine/ECSTest
+
       - name: Build
         run: cmake --build build
