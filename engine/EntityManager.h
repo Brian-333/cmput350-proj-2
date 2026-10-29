@@ -39,11 +39,14 @@ public:
 
     void RemoveEntity(EntityID entity) {
         assert(ValidEntity(entity));
-        mIsFree[entity] = true;
-        mFreeEntityIndices.push_back(entity);
+        // Remove all components from the entity
+        (TryRemoveComponent<Components>(entity), ...);
         for (size_t i = 0; i < numComponents; ++i) {
             mComponentIndices[entity][i] = kNullComponent;
         }
+
+        mIsFree[entity] = true;
+        mFreeEntityIndices.push_back(entity);
     }
 
     template <typename T>
@@ -88,6 +91,13 @@ public:
 private:
     [[nodiscard]] bool ValidEntity(EntityID id) const {
         return id < mIsFree.size() && !mIsFree[id];
+    }
+
+    template <typename T>
+    void TryRemoveComponent(EntityID entity) {
+        if (HasComponent<T>(entity)) {
+            RemoveComponent<T>(entity);
+        }
     }
     
     static constexpr size_t numComponents = sizeof...(Components);
