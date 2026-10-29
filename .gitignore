@@ -1,3 +1,6 @@
+# IDE C intellisense files
+.cache/clangd/
+
 ### C template
 # Prerequisites
 
