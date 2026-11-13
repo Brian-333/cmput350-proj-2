@@ -34,6 +34,8 @@ public:
 
 private:
     std::shared_ptr<sf::RenderWindow> mWindow;
+    Rect mWorldCameraRect; // All in world coordinates
+    float mWorldUnitsPerPixel;
 };
 
 }  // namespace ECSEngine

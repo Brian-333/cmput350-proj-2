@@ -22,6 +22,14 @@ struct Point2D {
     return Point2D(number * rhs.x, number * rhs.y);
 }
 
+[[maybe_unused]] static Point2D operator+(const Point2D& lhs, const Point2D& rhs) {
+    return Point2D(lhs.x + rhs.x, lhs.y + rhs.y);
+}
+
+[[maybe_unused]] static Point2D operator-(const Point2D& lhs, const Point2D& rhs) {
+    return Point2D(lhs.x - rhs.x, lhs.y - rhs.y);
+}
+
 struct Line {
     Point2D p1, p2;
 

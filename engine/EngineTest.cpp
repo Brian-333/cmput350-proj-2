@@ -2,6 +2,8 @@
 
 #include "EntityManager.h"
 #include "Component.h"
+#include "SoundManager.h"
+#include "SpriteManager.h"
 
 void TestEntityManager() {
     ECSEngine::EntityManager<int, float, char> entityManager;
@@ -59,12 +61,48 @@ void TestEntityManager() {
     std::cout << "EntityManager test passed" << std::endl;
 }
 
+void TestSoundManager() {
+    ECSEngine::SoundManager soundManager;
+    soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem");
+    sf::Sound& currentSound = soundManager.GetSound("gem");
+    currentSound.play();
+    while (currentSound.getStatus() == sf::Sound::Status::Playing) {
+        sf::sleep(sf::milliseconds(10));
+    }
+    assert(currentSound.getVolume() == 100);
+    
+    soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem", 50);
+    currentSound = soundManager.GetSound("gem");
+    currentSound.play();
+    while (currentSound.getStatus() == sf::Sound::Status::Playing) {
+        sf::sleep(sf::milliseconds(10));
+    }
+    assert(currentSound.getVolume() == 50);
+    std::cout << "SoundManager test passed" << std::endl;
+}
+
+// This test is written with help of Cursor AI.
+void TestSpriteManager() {
+    ECSEngine::SpriteManager spriteManager;
+    ECSEngine::Rect rect{{0, 0}, 16, 16};
+    ECSEngine::SpriteID id0 = spriteManager.RegisterTexture(
+        "../assets/spritesheet-tiles-default.png", rect);
+    ECSEngine::SpriteID id1 = spriteManager.RegisterTexture(
+        "../assets/spritesheet-tiles-default.png", {{16, 0}, 16, 16});
+    assert(id0 == 0);
+    assert(id1 == 1);
+    assert(&spriteManager.GetSprite(id0) != &spriteManager.GetSprite(id1));
+    assert(spriteManager.GetSprite(id0).getTextureRect().size.x == 16);
+    std::cout << "SpriteManager test passed" << std::endl;
+}
+
 
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
     TestEntityManager();
-
+    TestSoundManager();
+    TestSpriteManager();
     return 0;
 }
