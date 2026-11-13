@@ -2,6 +2,7 @@
 
 #include "EntityManager.h"
 #include "Component.h"
+#include "SoundManager.h"
 
 void TestEntityManager() {
     ECSEngine::EntityManager<int, float, char> entityManager;
@@ -59,12 +60,32 @@ void TestEntityManager() {
     std::cout << "EntityManager test passed" << std::endl;
 }
 
+void TestSoundManager() {
+    ECSEngine::SoundManager soundManager;
+    soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem");
+    sf::Sound& currentSound = soundManager.GetSound("gem");
+    currentSound.play();
+    while (currentSound.getStatus() == sf::Sound::Status::Playing) {
+        sf::sleep(sf::milliseconds(10));
+    }
+    assert(currentSound.getVolume() == 100);
+    
+    soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem", 10);
+    currentSound = soundManager.GetSound("gem");
+    currentSound.play();
+    while (currentSound.getStatus() == sf::Sound::Status::Playing) {
+        sf::sleep(sf::milliseconds(10));
+    }
+    assert(currentSound.getVolume() == 50);
+    std::cout << "SoundManager test passed" << std::endl;
+}
+
 
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
     TestEntityManager();
-
+    TestSoundManager();
     return 0;
 }
