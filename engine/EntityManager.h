@@ -88,13 +88,15 @@ public:
         return std::get<ComponentStorage<T>>(mComponentStorages);
     }
 
+    bool IsValid(EntityID id) const {return ValidEntity(id); }
+
     // TODO: Implement iterators for the entity manager
-    // using tEntity = std::vector<Entity>;
-	// using const_iterator = tEntity::const_iterator;
-	// const_iterator cbegin() const { return mEntities.begin(); }
-	// const_iterator cend() const { return mEntities.end(); }
-	// const_iterator begin() { return mEntities.begin(); }
-	// const_iterator end() { return mEntities.end(); }
+    using tEntity = std::vector<Entity>;
+	using const_iterator = tEntity::const_iterator;
+	const_iterator cbegin() const { return mEntities.begin(); }
+	const_iterator cend() const { return mEntities.end(); }
+	const_iterator begin() { return mEntities.begin(); }
+	const_iterator end() { return mEntities.end(); }
 
 private:
     [[nodiscard]] bool ValidEntity(EntityID id) const {

@@ -11,6 +11,12 @@ struct Point2D {
     float x, y;
     Point2D(float x = 0, float y = 0) : x(x), y(y) {}
     Point2D(int x, int y) : x(x), y(y) {}
+
+    Point2D &operator+=(const Point2D &other) {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
 };
 
 [[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Point2D& p) {
@@ -25,6 +31,8 @@ struct Point2D {
 [[maybe_unused]] static Point2D operator+(const Point2D& lhs, const Point2D& rhs) {
     return Point2D(lhs.x + rhs.x, lhs.y + rhs.y);
 }
+
+
 
 [[maybe_unused]] static Point2D operator-(const Point2D& lhs, const Point2D& rhs) {
     return Point2D(lhs.x - rhs.x, lhs.y - rhs.y);
