@@ -91,9 +91,28 @@ public:
                     break;
                 }
 
+                // AI assistance (Claude) was used for this side detection
+                // which side of the tile were we on last frame? (0.01f absorbs float rounding when flush)
+                const Rect& prev = collisionC.previousCollisionBox;
+                bool wasAbove = prev.topLeft.y + prev.height <= tileBox.topLeft.y + 0.01f;
+                bool wasBelow = prev.topLeft.y >= tileBox.topLeft.y + tileBox.height - 0.01f;
+                bool wasLeft = prev.topLeft.x + prev.width <= tileBox.topLeft.x + 0.01f;
+                bool wasRight = prev.topLeft.x >= tileBox.topLeft.x + tileBox.width - 0.01f;
+
+                // we came at the tile diagonally (e.g. jumping while pushing into a wall, where the wall tile
+                // above us looks like a ceiling), so resolve along the axis we overlap the least
+                if ((wasAbove || wasBelow) && (wasLeft || wasRight)) {
+                    if (overlapBox.width < overlapBox.height) {
+                        wasAbove = false;
+                        wasBelow = false;
+                    } else {
+                        wasLeft = false;
+                        wasRight = false;
+                    }
+                }
+
                 // check onGround
-                if (collisionC.previousCollisionBox.topLeft.y + collisionC.previousCollisionBox.height
-                    <= tileBox.topLeft.y + 0.01f) {
+                if (wasAbove) {
                     locationC.loc.y -= overlapBox.height;
 
                     if (isPlayer && lastFrameGround == 0 && 
@@ -114,10 +133,8 @@ public:
                     collisionC.onGround = 1;
                 }
                 // AI assistance (Claude) was used for part of the ceiling, wall and fallback checks below
-                // the 0.01f margins absorb float rounding when boxes are exactly flush
                 // check onCeiling: last frame our top was at or below the tile's bottom
-                else if (collisionC.previousCollisionBox.topLeft.y
-                         >= tileBox.topLeft.y + tileBox.height - 0.01f) {
+                else if (wasBelow) {
                     locationC.loc.y += overlapBox.height;
 
                     if (isPlayer && lastFrameCeiling == 0 && 
@@ -134,8 +151,7 @@ public:
                     collisionC.onCeiling = 1;
                 }
                 // check onRightWall: last frame our right side was left of the tile, so the wall is on our right
-                else if (collisionC.previousCollisionBox.topLeft.x + collisionC.previousCollisionBox.width
-                         <= tileBox.topLeft.x + 0.01f) {
+                else if (wasLeft) {
                     locationC.loc.x -= overlapBox.width;
 
                     if (isPlayer && lastFrameRightWall == 0 && 
@@ -152,8 +168,7 @@ public:
                     collisionC.onRightWall = 1;
                 }
                 // check onLeftWall: last frame our left side was right of the tile, so the wall is on our left
-                else if (collisionC.previousCollisionBox.topLeft.x
-                         >= tileBox.topLeft.x + tileBox.width - 0.01f) {
+                else if (wasRight) {
                     locationC.loc.x += overlapBox.width;
 
                     if (isPlayer && lastFrameLeftWall == 0 && 

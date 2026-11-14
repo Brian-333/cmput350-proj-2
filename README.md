@@ -35,3 +35,19 @@
 
 **What was generated:** a one-line change to how spawned stars get their gravity: `GravityComponent{{0.f, 0.5f}}` became `GravityComponent(Point2D(0.f, 0.5f))`. The brace version was ambiguous to Apple clang (it could also be read as building a `GravityComponent` from two numbers).
 
+### Wall slide in `engine/GravitySystem.h` (Claude, Anthropic)
+**Prompt (Damon):** "since the checks are similar, can you fill in the wall slide for me using the style that i went with for the wall jump? youll have to get the collision component too i am guessing"
+
+**What was generated:** the wall slide block after the gravity is applied (marked with an `// AI assistance (Claude) ...` comment), the `kWallSlideSpeed` constant and the `CollisionComponent.h` include. When the player is falling, not on the ground and holding into a wall, the fall speed is capped at `kWallSlideSpeed` and the `"wallSlide"` sound plays, unless it is already playing.
+
+**Reflection:** TODO (Damon)
+
+### Fixes for jumping next to walls and the wall slide sound (Claude, Anthropic)
+**Prompt (Damon):** "The wall slide sound plays repeatedly while sliding down a wall. theres also a bug that wont let the player jump if they are on the ground and holding towards the wall. can you fix these"
+
+**What was generated:**
+- `engine/CollisionSystem.h`: the side detection before the ground check (marked with an `// AI assistance (Claude) ...` comment). The four checks now use `wasAbove`/`wasBelow`/`wasLeft`/`wasRight`, and when the entity came at a tile diagonally it is resolved along the axis with the smaller overlap. The cause of the jump bug: jumping while pushing into a wall moves the player up beside the wall tile above them, and because that tile was above the player last frame, the old checks treated it as a ceiling and cancelled the jump.
+- `engine/GravitySystem.h` and `engine/LocationComponent.h`: a `wallSliding` flag on `GravityComponent`, so the `"wallSlide"` sound plays once when a slide starts instead of repeating while sliding.
+
+**Reflection:** TODO (Damon)
+
