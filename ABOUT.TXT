@@ -1,0 +1,127 @@
+CMPUT 350 HW 2
+==============
+
+TEAM CONTRIBUTIONS AND WORK SPLIT
+=================================
+
+We split the project the same way as our previous project: Brian built the engine (resource managers, engine loop and rendering) and Damon built the game (gameplay systems, map loading and game setup). Working in separate files let us work independently. We agreed up front on what the shared component data means: velocities and accelerations are per frame at a fixed 60 fps, onLeftWall means a wall on the entity's left side, CameraShake goes on the player, and only InputSystem updates lastKeydown.
+
+Brian Lin (engine)
+------------------
+- EntityManager (entities, component storage in Component.h/Pack.h, removing an entity's components) and its tests in EngineTest.cpp
+- SoundManager, SpriteManager, WindowManager (camera, world/window conversions, debug drawing) and SystemManager
+- ECSEngine: the main loop at 60 fps, event processing that writes key states into every InputComponent, and collision box debug drawing (toggled with the backtick ` key)
+- SpriteSystem (scaled drawing in world or screen space, rounded to whole pixels) and CameraSystem (x-axis follow with the 10% / 10-30% / center 40% zones, fixed y, applying and removing CameraShake)
+- Engine docstrings, build setup and the GitHub build workflow
+
+Damon Grant (game)
+------------------
+- MovementSystem, CollisionLateSystem (the spec's CollisionSystemUpdate) and GravitySystem (falling faster than rising, faster falling while holding down, wall slide with its sound, max fall speed, gravity turned off during a dash)
+- InputSystem: acceleration-based running with air control, jump with variable height, wall jump and dash
+- CollisionSystem: static tile collisions with side detection, spikes that respawn the player, landing sound, stars bouncing off tiles, collecting stars for points, star vs star collisions and screen shake
+- SpawnSystem (stars in random directions) and ScoreSystem (digit sprites in the top-left corner)
+- platformer/main.cpp: the map loader for both dictionary types (spikes and the spawner are detected while loading), sounds, the player, the hand-placed star outside the walls, the score digits, the camera entity, system order and value tuning
+- Smaller engine additions: entity iterators and IsValid in EntityManager, rectangle intersection (&= and Intersect) in MathUtil.h, the collectable flag on CollisionComponent, the wallSliding flag on GravityComponent and #pragma once in Keyboard.h
+
+AI USAGE
+========
+
+Dash logic in engine/InputSystem.h (Claude, Anthropic)
+------------------------------------------------------
+Prompt (Damon): "Here are some notes on the dash, would you be able to fill in my dash logic here? Keep it simple and similar to the structure of the code i have already done." Attached were the lecture notes on the dash: a timer on how often you can dash, dash only left/right, dash outward when on a wall, and still dash into the wall when on both the floor and a wall.
+
+What was generated: the block between the // --- Dash (AI-generated ... and // --- end AI-generated dash --- comments, the !dashing && checks added to the speed clamp and friction, and the kDashInterval (changed from 25 to 60 so the dash is once per second, as the spec says) and kDashFrames constants.
+
+Ceiling, wall and fallback collision checks in engine/CollisionSystem.h (Claude, Anthropic)
+-------------------------------------------------------------------------------------------
+Prompt (Damon): "since i have completed the ground check, fill in the other checks for me in my same style while keeping things simple and easy to follow"
+
+What was generated: the onCeiling, onRightWall and onLeftWall checks after Damon's ground check, modelled on it, and the fallback else that pushes the entity out along the smaller overlap when it was already overlapping a tile last frame. The code is marked with an // AI assistance (Claude) ... comment. Damon later added the star bounce (kStarBounce) to these branches himself.
+
+Dynamic vs dynamic collision checks in engine/CollisionSystem.h (Claude, Anthropic)
+-----------------------------------------------------------------------------------
+Prompt (Damon): "since I already processed collisions for the dynamic vs static entities, fill in the dynamic vs dynamic ones for me using my same style. It shouldnt vary too much probably."
+
+What was generated: inside Damon's dynamic vs dynamic loop (after his overlapBox setup): the real-collision check, the star collect (add to score, play "starCollect", remove the star), and the star vs star bounce (swap velocities scaled by kStarBounce, push apart along the smaller overlap). Also the IsValid(id) check before the landing sound, which stops the code from using an entity that was just collected. Marked with an // AI assistance (Claude) ... comment.
+
+Screen shake in the ceiling and wall checks in engine/CollisionSystem.h (Claude, Anthropic)
+-------------------------------------------------------------------------------------------
+Prompt (Damon): "ok now that ive done it for the ground check, copy my logic to the other 3"
+
+What was generated: copies of Damon's ground-hit screen shake block in the ceiling, right wall and left wall checks, changed to use lastFrameCeiling/lastFrameRightWall/lastFrameLeftWall and the matching velocity axis (y for the ceiling, x for the walls).
+
+Gravity component construction fix in engine/SpawnSystem.h (Claude, Anthropic)
+------------------------------------------------------------------------------
+Prompt (Damon): "try to build it for me and look, also resolve the syntax"
+
+What was generated: a one-line change to how spawned stars get their gravity: GravityComponent{{0.f, 0.5f}} became GravityComponent(Point2D(0.f, 0.5f)). The brace version was ambiguous to Apple clang (it could also be read as building a GravityComponent from two numbers).
+
+Wall slide in engine/GravitySystem.h (Claude, Anthropic)
+--------------------------------------------------------
+Prompt (Damon): "since the checks are similar, can you fill in the wall slide for me using the style that i went with for the wall jump? youll have to get the collision component too i am guessing"
+
+What was generated: the wall slide block after the gravity is applied (marked with an // AI assistance (Claude) ... comment), the kWallSlideSpeed constant and the CollisionComponent.h include. When the player is falling, not on the ground and holding into a wall, the fall speed is capped at kWallSlideSpeed and the "wallSlide" sound plays, unless it is already playing.
+
+Fixes for jumping next to walls and the wall slide sound (Claude, Anthropic)
+----------------------------------------------------------------------------
+Prompt (Damon): "The wall slide sound plays repeatedly while sliding down a wall. theres also a bug that wont let the player jump if they are on the ground and holding towards the wall. can you fix these"
+
+What was generated:
+- engine/CollisionSystem.h: the side detection before the ground check (marked with an // AI assistance (Claude) ... comment). The four checks now use wasAbove/wasBelow/wasLeft/wasRight, and when the entity came at a tile diagonally it is resolved along the axis with the smaller overlap. The cause of the jump bug: jumping while pushing into a wall moves the player up beside the wall tile above them, and because that tile was above the player last frame, the old checks treated it as a ceiling and cancelled the jump.
+- engine/GravitySystem.h and engine/LocationComponent.h: a wallSliding flag on GravityComponent, so the "wallSlide" sound plays once when a slide starts instead of repeating while sliding.
+
+Value tuning (Claude, Anthropic)
+--------------------------------
+Prompt (Damon): "Ok we are all done. For some values I would like you to tune: Camera shake is way too strong right now. Player should be double its size. Jump height is WAY too high. Stars spawn too fast. The dash is too fast. Player is too fast. For these small tunings, you dont need to reference ai usage actually in the code since they are just values we are changing but still add this prompt in the readme"
+
+What was changed (values only):
+- engine/CollisionSystem.h: kShakeScale 0.5 to 0.15, kShakeFrames 8 to 6.
+- engine/InputSystem.h: kJumpVelocity 25 to 13, kMaxRunVelocity 15 to 7, kGroundRunAcceleration 5 to 1, kAirRunAcceleration 4 to 0.7, kDashVelocity 50 to 18, kWallJumpVelocity 10 to 7 (kept equal to the max run speed so the speed clamp doesn't cut wall jumps short).
+- platformer/main.cpp: player sprite drawn at 96x96 instead of 64x64 (1.5x), collision box scaled to match as {{18, 20}, 61, 76}; star spawner first spawn after 60 frames, then every 120 frames instead of every 30.
+
+Camera system in engine/CameraSystem.h (Cursor)
+-----------------------------------------------
+Prompt (Brian): "Based on my implementation of the lab and the requirement How should the @engine/CameraSystem.h and CameraSystem be implemented", then "Implement it for me please", then "Can this be simplfied and also does it align with the current implementation of windowManager?"
+
+What was generated: the CameraSystem::Run body, based on Brian's lab 9 camera follower and limited to the x-axis. The camera stays still while the player is inside softExclusion, eases toward the player by speed between the soft and hard zones, and snaps to the hardExclusion edge so the player never enters the outer 10% of the screen. CameraShake is added only to the drawn center. The follow-up prompt simplified it to set the view through WindowManager::SetWorldRect, which is the call that sets both the view and the scale. Marked with a // Written with help of Cursor. comment.
+
+Sprite system in engine/SpriteSystem.h (Cursor)
+-----------------------------------------------
+Prompt (Brian): "Now how to do @engine/SpriteSystem.h from my lab 8 following the same pdf spec", then "Implement it in @engine/SpriteSystem.h", and later "There is weird edge on top of my stars when rendered"
+
+What was generated: the SpriteSystem::Run body, based on Brian's lab 8 sprite transform. It scales each sprite's texture rectangle into its bounds, offsets it by the entity location, and converts world-space sprites to window coordinates. The later fix rounds the draw position to whole pixels. Stars at fractional positions were picking up the bottom row of the tile above them in the sprite sheet. Marked with a // Written with help of Cursor. comment.
+
+Engine loop, event processing and debug drawing in engine/ECSEngine.h (Cursor)
+------------------------------------------------------------------------------
+Prompt (Brian): the ECSEngine section of the spec, then "Check my current implementation", "how to deal with InputComponent", "Explain setKey", "Check my debug drawer now" and "how to set ~ for debug"
+
+What was generated: Brian wrote Run, ProcessEvents and DebugDraw, and Cursor reviewed them. It caught a pause check that was backwards (so the systems never ran) and a range-for in DebugDraw that used cbegin(), cend() (the comma operator) instead of iterating the entity manager. It suggested the setKey lambda that copies key presses and releases into every InputComponent, and the Scan::Grave check that toggles debug drawing. Marked with // Written with help of Cursor comments.
+
+Sprite manager and its test in engine/SpriteManager.cpp and engine/EngineTest.cpp (Cursor)
+------------------------------------------------------------------------------------------
+Prompt (Brian): "Is my implementation of RegisterTexture correct", "How do I implement getSprite" and "Write a really short test for engine test"
+
+What was generated: review comments on RegisterTexture. Brian changed it to apply sourceRect and make a new sprite on every call instead of reusing the first sprite with that texture. Cursor also suggested the GetSprite lookup with a fallback for bad IDs and wrote TestSpriteManager (marked with a // This test is written with help of Cursor AI. comment).
+
+Bug fixes from terminal errors (Cursor)
+---------------------------------------
+Prompt (Brian): pasted terminal output from failed runs, e.g. the SoundManager volume assert failing and mutex lock failed: Invalid argument when closing the game.
+
+What was generated:
+- engine/SoundManager.h/.cpp and engine/SpriteManager.h/.cpp: the fallback sf::Sound, sf::Music, sf::Texture and sf::Sprite were moved from function-local static objects to class members. The statics were destroyed after SFML had shut down, which crashed the game on exit.
+- engine/EngineTest.cpp: the sound test volume changed from 10 to 50. SFML stores volume as volume * 0.01f, so 10 came back as about 9.999999 and failed the == check.
+- Missing .map files in build/assets were fixed by re-running cmake -S . -B build (no code change).
+
+Docstrings and spec checks (Cursor)
+-----------------------------------
+Prompt (Brian): "Properly docstring all engine files like the format in @engine/SoundManager.cpp" 
+
+What was generated: the / ... @param ... @return */ docstrings on the classes and functions in engine/ (comments only, no code changes). 
+
+Reflection (Brian)
+------------------
+I mostly used Cursor as a reviewer while building the engine. For the managers and the engine loop, I wrote the code myself and asked Cursor to check it against the spec or explain compiler errors, which caught bugs such as the backwards pause check and the comma-operator loop. For the camera and sprite systems, I had already done the logic in labs 8 and 9, so I had Cursor port my lab code into the ECS systems and then asked it to simplify the result to match our WindowManager. It was most useful for SFML 3 problems I didn't know about, like the exit crash from static SFML objects and the texture bleeding on the stars. Every suggestion was checked by building and running the game and the engine tests.
+
+Reflection (Damon)
+------------------
+I found AI to be very useful for the project to do some of the tedious work. I worked on a lot of the game implementation and systems for dealing with jumping and collisions. For a lot of these systems they followed the pattern of doing 1 check and then doing a similar check 3 more times with very slightly different logic. I was able to do the first check on my own in order to learn how the systems work and then quickly get AI to fill in the rest, while not missing out on much learning. It was also useful for debugging at the very end (although we didn't have too much to debug). For quality, I had it mimic my code style so that I would be able to understand it well. It did not write anything which I was not able to decipher. It was also very successful for debugging at the end.

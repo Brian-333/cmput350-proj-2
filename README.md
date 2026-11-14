@@ -1,5 +1,24 @@
 # CMPUT 350 HW 2
 
+## Team Contributions and Work Split
+
+We split the project the same way as our previous project: Brian built the engine (resource managers, engine loop and rendering) and Damon built the game (gameplay systems, map loading and game setup). Working in separate files let us work independently. We agreed up front on what the shared component data means: velocities and accelerations are per frame at a fixed 60 fps, `onLeftWall` means a wall on the entity's left side, `CameraShake` goes on the player, and only `InputSystem` updates `lastKeydown`.
+
+### Brian Lin (engine)
+- `EntityManager` (entities, component storage in `Component.h`/`Pack.h`, removing an entity's components) and its tests in `EngineTest.cpp`
+- `SoundManager`, `SpriteManager`, `WindowManager` (camera, world/window conversions, debug drawing) and `SystemManager`
+- `ECSEngine`: the main loop at 60 fps, event processing that writes key states into every `InputComponent`, and collision box debug drawing (toggled with the `` ` `` key)
+- `SpriteSystem` (scaled drawing in world or screen space, rounded to whole pixels) and `CameraSystem` (x-axis follow with the 10% / 10-30% / center 40% zones, fixed y, applying and removing `CameraShake`)
+- Engine docstrings, build setup and the GitHub build workflow
+
+### Damon Grant (game)
+- `MovementSystem`, `CollisionLateSystem` (the spec's CollisionSystemUpdate) and `GravitySystem` (falling faster than rising, faster falling while holding down, wall slide with its sound, max fall speed, gravity turned off during a dash)
+- `InputSystem`: acceleration-based running with air control, jump with variable height, wall jump and dash
+- `CollisionSystem`: static tile collisions with side detection, spikes that respawn the player, landing sound, stars bouncing off tiles, collecting stars for points, star vs star collisions and screen shake
+- `SpawnSystem` (stars in random directions) and `ScoreSystem` (digit sprites in the top-left corner)
+- `platformer/main.cpp`: the map loader for both dictionary types (spikes and the spawner are detected while loading), sounds, the player, the hand-placed star outside the walls, the score digits, the camera entity, system order and value tuning
+- Smaller engine additions: entity iterators and `IsValid` in `EntityManager`, rectangle intersection (`&=` and `Intersect`) in `MathUtil.h`, the `collectable` flag on `CollisionComponent`, the `wallSliding` flag on `GravityComponent` and `#pragma once` in `Keyboard.h`
+
 ## AI Usage
 
 ### Dash logic in `engine/InputSystem.h` (Claude, Anthropic)
