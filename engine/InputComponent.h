@@ -10,12 +10,19 @@
 
 namespace ECSEngine {
 
+/**
+ * Keyboard state for a player-controlled entity.
+ */
 struct InputComponent {
+    /**
+     * Create an input component.
+     * @param whichEntity The entity this input controls.
+     */
     InputComponent(EntityID whichEntity) : entity(whichEntity), lastDash(0) {}
     EntityID entity;
-    int lastDash;
-    std::bitset<sf::Keyboard::ScancodeCount> keydown;
-    std::bitset<sf::Keyboard::ScancodeCount> lastKeydown;
+    int lastDash;  // Frames since the last dash
+    std::bitset<sf::Keyboard::ScancodeCount> keydown;      // Keys held this frame
+    std::bitset<sf::Keyboard::ScancodeCount> lastKeydown;  // Keys held last frame
 };
 
 }  // namespace ECSEngine

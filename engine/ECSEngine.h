@@ -20,15 +20,40 @@
 
 namespace ECSEngine {
 
+/**
+ * The view of the engine that systems use to access the managers.
+ */
 template <typename... Components>
 class EngineView {
 public:
+    /**
+     * Get the sound manager.
+     * @return The sound manager.
+     */
     virtual SoundManager& GetSoundManager() = 0;
+
+    /**
+     * Get the sprite manager.
+     * @return The sprite manager.
+     */
     virtual SpriteManager& GetSpriteManager() = 0;
+
+    /**
+     * Get the entity manager.
+     * @return The entity manager.
+     */
     virtual EntityManager<Components...>& GetEntityManager() = 0;
+
+    /**
+     * Get the window manager.
+     * @return The window manager.
+     */
     virtual WindowManager& GetWindowManager() = 0;
 };
 
+/**
+ * The engine. Owns the managers and runs the systems once per frame.
+ */
 template <typename... Components>
 class ECSEngine : public EngineView<Components...> {
 public:
@@ -37,14 +62,34 @@ public:
 
     void Run();
 
+    /**
+     * Get the sound manager.
+     * @return The sound manager.
+     */
     SoundManager& GetSoundManager() override { return mSoundManager; }
 
+    /**
+     * Get the sprite manager.
+     * @return The sprite manager.
+     */
     SpriteManager& GetSpriteManager() override { return mSpriteManager; }
 
+    /**
+     * Get the entity manager.
+     * @return The entity manager.
+     */
     EntityManager<Components...>& GetEntityManager() override { return mEntityManager; }
 
+    /**
+     * Get the window manager.
+     * @return The window manager.
+     */
     WindowManager& GetWindowManager() override { return mWindowManager; }
 
+    /**
+     * Get the system manager.
+     * @return The system manager.
+     */
     SystemManager<Components...>& GetSystemManager() { return mSystemManager; }
 
 private:
@@ -62,6 +107,12 @@ private:
     int debug;
 };
 
+/**
+ * Create the engine and its window, capped at 60 frames per second.
+ * @param width The width of the window in pixels.
+ * @param height The height of the window in pixels.
+ * @param name The title of the window.
+ */
 template <typename... Components>
 ECSEngine<Components...>::ECSEngine(unsigned int width, unsigned int height,
                                     const std::string& name)
@@ -74,6 +125,10 @@ template <typename... Components>
 ECSEngine<Components...>::~ECSEngine() {}
 
 // Written with help of Cursor
+/**
+ * Run the game loop until the window closes or a system requests exit.
+ * Each frame processes events, clears the window, runs the systems, and displays the frame.
+ */
 template <typename... Components>
 void ECSEngine<Components...>::Run() {
     std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
@@ -89,6 +144,11 @@ void ECSEngine<Components...>::Run() {
     }
 }
 
+/**
+ * Handle window events and copy key presses and releases into every InputComponent.
+ * The grave key (`) toggles debug drawing.
+ * @return False if the window was closed, true otherwise.
+ */
 template <typename... Components>
 bool ECSEngine<Components...>::ProcessEvents() {
     std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
@@ -122,6 +182,9 @@ bool ECSEngine<Components...>::ProcessEvents() {
 }
 
 // Written with help of Cursor
+/**
+ * Draw an outline around the collision box of every entity with a location.
+ */
 template <typename... Components>
 void ECSEngine<Components...>::DebugDraw() {
     for (const Entity& entity : mEntityManager) {

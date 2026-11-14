@@ -17,14 +17,26 @@ const float kAirRunAcceleration = 0.7f;
 const int kDashInterval = 60;   // frames between dashes (1 second at 60 fps)
 const int kDashFrames = 10;     // frames a dash lasts (gravity off, no speed clamp)
 
+/**
+ * Turns player key input into running, jumping, wall jumping, and dashing.
+ */
 template <typename... Components>
 class InputSystem : public System<Components...> {
 public:
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name("InputSystem");
         return name;
     }
 
+    /**
+     * Update each player's velocity from its held keys and play the jump sound.
+     * @param engine The engine view used to access the entity and sound managers.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override { 
 
         auto& em = engine->GetEntityManager();

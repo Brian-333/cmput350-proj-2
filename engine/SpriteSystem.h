@@ -16,15 +16,27 @@ namespace ECSEngine {
 // Written with help of Cursor.
 // Scales each texture rect into its destination box, as in the lab 8 sprite transform.
 // Prompt: implement SpriteSystem from the lab 8 sprite exercise and the Project 2 spec.
+/**
+ * Draws every entity's sprite scaled into its bounds.
+ */
 template <typename... Components>
 class SpriteSystem : public System<Components...> {
 public:
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name("SpriteSystem");
         return name;
     }
 
-    // ECSEngine::Run owns clear() and display(), so DebugDraw can draw after this system.
+    /**
+     * Draw each sprite at its entity's location, converting world-space sprites to the window.
+     * Note: ECSEngine::Run owns clear() and display(), so DebugDraw can draw after this system.
+     * @param engine The engine view used to access the entity, sprite, and window managers.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& entityManager = engine->GetEntityManager();
         auto& spriteManager = engine->GetSpriteManager();

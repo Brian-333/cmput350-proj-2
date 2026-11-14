@@ -8,6 +8,9 @@
 
 namespace ECSEngine {
 
+/**
+ * Owns the window and converts between world and window coordinates for the camera.
+ */
 class WindowManager {
 public:
     WindowManager(unsigned int width, unsigned int height, const std::string& title);

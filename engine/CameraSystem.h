@@ -18,14 +18,26 @@ namespace ECSEngine {
 // Written with help of Cursor.
 // Follows the lab 9 dynamic camera on x only: dead zone, soft ease, hard clamp.
 // Prompt: implement CameraSystem from the lab 9 follower and the Project 2 camera rules.
+/**
+ * Moves each camera to follow its target entity and applies any camera shake.
+ */
 template <typename... Components>
 class CameraSystem : public System<Components...> {
 public:
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name = "CameraSystem";
         return name;
     }
 
+    /**
+     * Update every camera's position from its followed entity and set the window view.
+     * @param engine The engine view used to access the entity and window managers.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& entityManager = engine->GetEntityManager();
         auto& windowManager = engine->GetWindowManager();

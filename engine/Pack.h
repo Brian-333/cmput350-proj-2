@@ -57,21 +57,36 @@ constexpr int packTypeToIndex = _packTypeToIndex<0, QueryType, Args...>;
 
 }  // namespace pack_detail
 
+/**
+ * Compile-time queries on a list of types, used to map component types to storage indices.
+ */
 template <typename... Args>
 struct Pack {
     // (d)
+    /**
+     * The number of types in the pack.
+     */
     static constexpr int size = pack_detail::packSize<Args...>;
 
     // (e)
+    /**
+     * The index of QueryType in the pack, or -1 if it is not in the pack.
+     */
     template <typename QueryType>
     static constexpr int index = pack_detail::packTypeToIndex<QueryType, Args...>;
 
     // (f)
+    /**
+     * The type at QueryIndex in the pack.
+     */
     template <int QueryIndex>
         requires((QueryIndex >= 0) && (QueryIndex < size))
     using type = pack_detail::packIndexToType<QueryIndex, Args...>;
 
     // Trivial addition:
+    /**
+     * Whether QueryType is in the pack.
+     */
     template <typename QueryType>
     static constexpr bool contains = (index<QueryType> != -1);
 };

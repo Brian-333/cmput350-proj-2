@@ -14,14 +14,27 @@ const float kStarBounce = 0.7f;
 const float kShakeScale = 0.15f;
 const int kShakeFrames = 6;
 
+/**
+ * Resolves collisions between dynamic entities and static tiles, and between dynamic entities.
+ */
 template <typename... Components>
 class CollisionSystem : public System<Components...> {
 public:
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name("CollisionSystem");
         return name;
     }
 
+    /**
+     * Push dynamic entities out of static tiles, update their contact flags, handle spikes,
+     * star collection and star bounces, and trigger camera shakes and landing sounds.
+     * @param engine The engine view used to access the entity and sound managers.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override { 
         auto& em = engine->GetEntityManager();
         auto& collisions = em.template GetComponentStorage<CollisionComponent>();

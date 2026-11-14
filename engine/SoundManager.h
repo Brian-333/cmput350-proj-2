@@ -7,6 +7,9 @@
 
 namespace ECSEngine {
 
+/**
+ * Loads and owns sound effects and music, looked up by name.
+ */
 class SoundManager {
 public:
     SoundManager() = default;

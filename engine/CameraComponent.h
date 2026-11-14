@@ -12,6 +12,9 @@
 
 namespace ECSEngine {
 
+/**
+ * A camera that scrolls the view to keep a followed entity inside its exclusion zones.
+ */
 struct CameraComponent {
     Point2D position;  // [world coordinates] position in world coordinates
     float worldUnitsPerPixel;
@@ -22,13 +25,19 @@ struct CameraComponent {
     float speed;
 };
 
+/**
+ * Marks a camera entity as following another entity.
+ */
 struct CameraFollower {
     EntityID entityID;  // The entity that this camera follows
 };
 
+/**
+ * A short camera shake applied to the followed entity, alternating the offset sign each frame.
+ */
 struct CameraShake {
-    int frameLimit;
-    Point2D offset;
+    int frameLimit;  // Frames of shake remaining
+    Point2D offset;  // [world coordinates] Shake offset from the camera center
 };
 
 }  // namespace ECSEngine

@@ -9,24 +9,36 @@
 
 namespace ECSEngine {
 
-// This is a top-left location of an entity all other stored locations are relative to this
-// location. This means that moving this single location will move anything else which is relative
-// to the location such as:
-// - sprite bounding boxes
-// - collision bounding boxes
+/**
+ * The top-left location of an entity. All other stored locations are relative to this
+ * location, so moving it moves anything relative to it, such as:
+ * - sprite bounding boxes
+ * - collision bounding boxes
+ */
 struct LocationComponent {
     Point2D loc;
 };
 
+/**
+ * The velocity of an entity, added to its location every frame.
+ */
 struct MovementComponent {
     Point2D velocity;  // Velocity in pixels per second
 };
 
+/**
+ * Gravity acting on an entity.
+ */
 struct GravityComponent {
+    /**
+     * Create a gravity component.
+     * @param acceleration The acceleration added to velocity each frame.
+     * @param disabledTimer The number of frames gravity is turned off for.
+     */
     GravityComponent(Point2D acceleration, int disabledTimer = 0)
         : acceleration(acceleration), disabledTimer(disabledTimer) {}
     Point2D acceleration;  // Acceleration in pixels per second squared
-    int disabledTimer;
+    int disabledTimer;     // Frames left with gravity turned off (e.g. during a dash)
     bool wallSliding = false;  // was the entity sliding down a wall last frame (used to play the slide sound once)
 };
 

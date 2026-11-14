@@ -7,13 +7,14 @@
 
 namespace ECSEngine {
 
-// The sprite rectangle is relative to the entity location in the world
-// This is only defined if an entity also has a LocationComponent.
+/**
+ * A score counter displayed as three digit entities.
+ */
 class ScoreComponent {
 public:
     int score;
-    SpriteID digitTextureID[10];
-    EntityID digitID[3];
+    SpriteID digitTextureID[10];  // Texture for each digit 0-9
+    EntityID digitID[3];          // Entities showing the ones, tens, and hundreds digits
 
 private:
 };

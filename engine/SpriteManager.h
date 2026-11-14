@@ -11,6 +11,9 @@ namespace ECSEngine {
 
 using SpriteID = size_t;
 
+/**
+ * Loads textures and owns the sprites cut from them, looked up by SpriteID.
+ */
 class SpriteManager {
 public:
     SpriteManager() = default;

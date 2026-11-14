@@ -5,6 +5,9 @@
 #include "SoundManager.h"
 #include "SpriteManager.h"
 
+/**
+ * Test adding, getting, and removing components and entities in the entity manager.
+ */
 void TestEntityManager() {
     ECSEngine::EntityManager<int, float, char> entityManager;
     ECSEngine::EntityID entity = entityManager.CreateEntity("entity1");
@@ -61,6 +64,9 @@ void TestEntityManager() {
     std::cout << "EntityManager test passed" << std::endl;
 }
 
+/**
+ * Test registering and playing a sound, and re-registering it with a new volume.
+ */
 void TestSoundManager() {
     ECSEngine::SoundManager soundManager;
     soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem");
@@ -82,6 +88,9 @@ void TestSoundManager() {
 }
 
 // This test is written with help of Cursor AI.
+/**
+ * Test that registered sprites get separate IDs and keep their source rectangles.
+ */
 void TestSpriteManager() {
     ECSEngine::SpriteManager spriteManager;
     ECSEngine::Rect rect{{0, 0}, 16, 16};
@@ -97,6 +106,12 @@ void TestSpriteManager() {
 }
 
 
+/**
+ * Run all engine tests.
+ * @param argc The number of command line arguments (unused).
+ * @param argv The command line arguments (unused).
+ * @return 0 if every test passes.
+ */
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;

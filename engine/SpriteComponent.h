@@ -10,8 +10,10 @@
 
 namespace ECSEngine {
 
-// The sprite rectangle is relative to the entity location in the world
-// This is only defined if an entity also has a LocationComponent.
+/**
+ * A sprite drawn for an entity. The bounds are relative to the entity location,
+ * so the sprite is only drawn if the entity also has a LocationComponent.
+ */
 class SpriteComponent {
 public:
     SpriteID textureID;

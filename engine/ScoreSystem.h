@@ -6,14 +6,26 @@
 
 namespace ECSEngine {
 
+/**
+ * Updates the digit sprites of each score to show its current value.
+ */
 template <typename... Components>
 class ScoreSystem : public System<Components...> {
 public:
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name("ScoreSystem");
         return name;
     }
 
+    /**
+     * Set the texture of each digit entity to match the score.
+     * @param engine The engine view used to access the entity manager.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override { 
         auto& em = engine->GetEntityManager();
 
