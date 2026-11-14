@@ -65,20 +65,78 @@ private:
 template <typename... Components>
 ECSEngine<Components...>::ECSEngine(unsigned int width, unsigned int height,
                                     const std::string& name)
-    : mWindowManager(width, height, name) {}
+    : mWindowManager(width, height, name), running(true), step(false), debug(0) {
+        std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
+        window->setFramerateLimit(60);
+    }
 
 template <typename... Components>
 ECSEngine<Components...>::~ECSEngine() {}
 
+// Written with help of Cursor
 template <typename... Components>
-void ECSEngine<Components...>::Run() {}
+void ECSEngine<Components...>::Run() {
+    std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
+    while (window->isOpen()) {
+        if (!ProcessEvents()) break;
+        if (!running && !step) continue;
 
-template <typename... Components>
-bool ECSEngine<Components...>::ProcessEvents() {
-    return true;
+        step = false;
+        window->clear();
+        if (!mSystemManager.Run(this)) break;
+        if (debug) DebugDraw();
+        window->display();
+    }
 }
 
 template <typename... Components>
-void ECSEngine<Components...>::DebugDraw() {}
+bool ECSEngine<Components...>::ProcessEvents() {
+    std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
+    auto& inputs = mEntityManager.template GetComponentStorage<InputComponent>();
+
+    auto setKey = [&](sf::Keyboard::Scancode scancode, bool down) {
+        const auto idx = static_cast<std::size_t>(scancode);
+        for (std::size_t i = 0; i < inputs.mStorage.size(); ++i) {
+            if (!inputs.valid(i)) continue;
+            inputs[i].keydown[idx] = down;
+        }
+    };
+    while (const std::optional event = window->pollEvent()) {
+        if (event->is<sf::Event::Closed>()) {
+            window->close();
+            return false;
+        }
+        if (const auto* pressed = event->getIf<sf::Event::KeyPressed>()) {
+            setKey(pressed->scancode, true);
+            // optional: pause / step / debug toggles here
+            if (pressed->scancode == sf::Keyboard::Scan::Grave) {
+                debug = 1 - debug;
+            }
+        }
+        if (const auto* released = event->getIf<sf::Event::KeyReleased>()) {
+            setKey(released->scancode, false);
+        }
+    }
+
+    return true;
+}
+
+// Written with help of Cursor
+template <typename... Components>
+void ECSEngine<Components...>::DebugDraw() {
+    for (const Entity& entity : mEntityManager) {
+        auto id = entity.GetID();
+        if (!mEntityManager.IsValid(id)) continue;
+        if (!mEntityManager.template HasComponent<CollisionComponent>(id)) continue;
+        if (!mEntityManager.template HasComponent<LocationComponent>(id)) continue;
+        const auto& collision = mEntityManager.template GetComponent<CollisionComponent>(id);
+        const auto& location = mEntityManager.template GetComponent<LocationComponent>(id);
+        Rect box = collision.collisionBox;
+        box.topLeft += location.loc;
+        // optional if camera is set:
+        box = mWindowManager.WorldToWindow(box);
+        mWindowManager.DebugFrameRect(box, 255, 255, 255, 200);
+    }
+}
 
 }  // namespace ECSEngine
