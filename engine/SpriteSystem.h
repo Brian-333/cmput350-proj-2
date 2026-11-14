@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "ECSEngine.h"
 #include "LocationComponent.h"
 #include "MathUtil.h"
@@ -48,7 +50,9 @@ public:
 
             sprite.setScale({dst.width / static_cast<float>(texSize.x),
                              dst.height / static_cast<float>(texSize.y)});
-            sprite.setPosition({dst.topLeft.x, dst.topLeft.y});
+            // Fractional positions sample texels outside the source rect, pulling in
+            // edges of neighbouring tiles in the sprite sheet.
+            sprite.setPosition({std::round(dst.topLeft.x), std::round(dst.topLeft.y)});
             window->draw(sprite);
         }
         return kContinue;
