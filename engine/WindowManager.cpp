@@ -89,12 +89,9 @@ Point2D WindowManager::WindowToWorld(const Point2D& pt) const {
  * @param rect The rectangle in world coordinates.
  * @return The rectangle in window coordinates.
  */
-Rect WindowManager::WorldToWindow(const Rect& rect) const { 
-    return Rect(
-        WorldToWindow(rect.topLeft),
-        rect.width / mWorldUnitsPerPixel,
-        rect.height / mWorldUnitsPerPixel
-    );
+Rect WindowManager::WorldToWindow(const Rect& rect) const {
+    return Rect(WorldToWindow(rect.topLeft), rect.width / mWorldUnitsPerPixel,
+                rect.height / mWorldUnitsPerPixel);
 }
 
 /**
@@ -103,10 +100,8 @@ Rect WindowManager::WorldToWindow(const Rect& rect) const {
  * @return The point in window coordinates.
  */
 Point2D WindowManager::WorldToWindow(const Point2D& pt) const {
-    return Point2D(
-        (pt.x - mWorldCameraRect.topLeft.x) / mWorldUnitsPerPixel,
-        (pt.y - mWorldCameraRect.topLeft.y) / mWorldUnitsPerPixel
-    );
+    return Point2D((pt.x - mWorldCameraRect.topLeft.x) / mWorldUnitsPerPixel,
+                   (pt.y - mWorldCameraRect.topLeft.y) / mWorldUnitsPerPixel);
 }
 
 /**
@@ -124,28 +119,25 @@ void WindowManager::SetCamera(const Point2D& worldPt, const Point2D& screenPt) {
  * Get the center of the camera view.
  * @return The center of the camera view in world coordinates.
  */
-Point2D WindowManager::GetWorldCenter() const { 
-    return mWorldCameraRect.topLeft + Point2D(mWorldCameraRect.width / 2, mWorldCameraRect.height / 2);
+Point2D WindowManager::GetWorldCenter() const {
+    return mWorldCameraRect.topLeft +
+           Point2D(mWorldCameraRect.width / 2, mWorldCameraRect.height / 2);
 }
 
 /**
  * Get the scale of the camera view.
  * @return The number of world units per window pixel.
  */
-float WindowManager::GetWorldScale() const { 
-    return mWorldUnitsPerPixel;
-}
+float WindowManager::GetWorldScale() const { return mWorldUnitsPerPixel; }
 
 /**
  * Move the camera view so it is centered on a world point, keeping its size.
  * @param worldCenter The new center in world coordinates.
  */
 void WindowManager::SetWorldCenter(const Point2D& worldCenter) {
-    mWorldCameraRect = Rect(
-        worldCenter - Point2D(mWorldCameraRect.width / 2, mWorldCameraRect.height / 2),
-        mWorldCameraRect.width,
-        mWorldCameraRect.height
-    );
+    mWorldCameraRect =
+        Rect(worldCenter - Point2D(mWorldCameraRect.width / 2, mWorldCameraRect.height / 2),
+             mWorldCameraRect.width, mWorldCameraRect.height);
 }
 
 /**

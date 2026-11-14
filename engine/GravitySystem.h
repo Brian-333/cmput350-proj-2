@@ -18,20 +18,20 @@ const float kWallSlideSpeed = 2.f;  // max fall speed while sliding down a wall
 template <typename... Components>
 class GravitySystem : public System<Components...> {
 public:
-	/**
-	 * Get the name of the system.
-	 * @return The name of the system.
-	 */
+    /**
+     * Get the name of the system.
+     * @return The name of the system.
+     */
     const std::string& GetName() const override {
         static std::string name("GravitySystem");
         return name;
     }
 
-	/**
-	 * Add gravity to each entity's velocity, cap the fall speed, and handle wall sliding.
-	 * @param engine The engine view used to access the entity and sound managers.
-	 * @return kContinue to keep the engine running.
-	 */
+    /**
+     * Add gravity to each entity's velocity, cap the fall speed, and handle wall sliding.
+     * @param engine The engine view used to access the entity and sound managers.
+     * @return kContinue to keep the engine running.
+     */
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 

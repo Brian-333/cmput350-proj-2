@@ -33,7 +33,7 @@ struct Point2D {
      * @param other The point to add.
      * @return This point.
      */
-    Point2D &operator+=(const Point2D &other) {
+    Point2D& operator+=(const Point2D& other) {
         x += other.x;
         y += other.y;
         return *this;
@@ -151,7 +151,7 @@ struct Rect {
      * @param other The rectangle to intersect with.
      * @return This rectangle.
      */
-    Rect &operator&=(const Rect &other) {
+    Rect& operator&=(const Rect& other) {
         float left = std::max(topLeft.x, other.topLeft.x);
         float top = std::max(topLeft.y, other.topLeft.y);
         float right = std::min(topLeft.x + width, other.topLeft.x + other.width);
@@ -175,7 +175,7 @@ struct Rect {
      * @param other The rectangle to check against.
      * @return True if the overlap has a positive width and height.
      */
-    bool Intersect(const Rect &other) const {
+    bool Intersect(const Rect& other) const {
         Rect output = *this;
         output &= other;
         if (output.width > 0 && output.height > 0) {  // using && for player on floor edge case

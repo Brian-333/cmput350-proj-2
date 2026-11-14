@@ -57,9 +57,7 @@ public:
      * @param index The index to check.
      * @return True if the index is in range and has not been removed.
      */
-    bool valid(std::size_t index) const {
-        return index < mStorage.size() && !mValid[index];
-    }
+    bool valid(std::size_t index) const { return index < mStorage.size() && !mValid[index]; }
 
     /**
      * Remove the component at an index and mark the slot as free for reuse.

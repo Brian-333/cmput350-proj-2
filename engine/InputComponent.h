@@ -20,7 +20,7 @@ struct InputComponent {
      */
     InputComponent(EntityID whichEntity) : entity(whichEntity), lastDash(0) {}
     EntityID entity;
-    int lastDash;  // Frames since the last dash
+    int lastDash;                                          // Frames since the last dash
     std::bitset<sf::Keyboard::ScancodeCount> keydown;      // Keys held this frame
     std::bitset<sf::Keyboard::ScancodeCount> lastKeydown;  // Keys held last frame
 };
