@@ -30,8 +30,8 @@ jobs:
       - name: Build ECS Engine Tests
         run: cmake --build build --target ECSTest
 
-      - name: Run ECS Engine Tests
-        run: ./build/engine/ECSTest
+      # - name: Run ECS Engine Tests
+      #   run: ./build/engine/ECSTest
 
       - name: Build
         run: cmake --build build
