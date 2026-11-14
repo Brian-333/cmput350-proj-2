@@ -21,6 +21,10 @@ public:
 private:
     std::unordered_map<std::string, sf::Texture> mTextures;
     std::vector<sf::Sprite> mSprites;
+    // Owned here, not as function statics, so they are destroyed with the engine
+    // while SFML's graphics context still exists.
+    sf::Texture mFallbackTexture;
+    sf::Sprite mFallbackSprite{mFallbackTexture};
 };
 
 }  // namespace ECSEngine

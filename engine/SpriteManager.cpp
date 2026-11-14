@@ -16,10 +16,8 @@ SpriteID SpriteManager::RegisterTexture(const std::string& texturePath, const Re
 }
 
 sf::Sprite& SpriteManager::GetSprite(SpriteID id) {
-    static sf::Texture dummyTexture;
-    static sf::Sprite dummy(dummyTexture);
     if (id >= mSprites.size()) {
-        return dummy;
+        return mFallbackSprite;
     }
     return mSprites[id];
 }
