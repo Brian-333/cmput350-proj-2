@@ -51,3 +51,11 @@
 
 **Reflection:** TODO (Damon)
 
+### Value tuning (Claude, Anthropic)
+**Prompt (Damon):** "Ok we are all done. For some values I would like you to tune: Camera shake is way too strong right now. Player should be double its size. Jump height is WAY too high. Stars spawn too fast. The dash is too fast. Player is too fast. For these small tunings, you dont need to reference ai usage actually in the code since they are just values we are changing but still add this prompt in the readme"
+
+**What was changed (values only):**
+- `engine/CollisionSystem.h`: `kShakeScale` 0.5 to 0.15, `kShakeFrames` 8 to 6.
+- `engine/InputSystem.h`: `kJumpVelocity` 25 to 13, `kMaxRunVelocity` 15 to 7, `kGroundRunAcceleration` 5 to 1, `kAirRunAcceleration` 4 to 0.7, `kDashVelocity` 50 to 18, `kWallJumpVelocity` 10 to 7 (kept equal to the max run speed so the speed clamp doesn't cut wall jumps short).
+- `platformer/main.cpp`: player sprite drawn at 96x96 instead of 64x64 (1.5x), collision box scaled to match as `{{18, 20}, 61, 76}`; star spawner first spawn after 60 frames, then every 120 frames instead of every 30.
+

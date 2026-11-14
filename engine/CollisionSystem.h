@@ -11,8 +11,8 @@
 namespace ECSEngine {
 
 const float kStarBounce = 0.7f;
-const float kShakeScale = 0.5f;
-const int kShakeFrames = 8;
+const float kShakeScale = 0.15f;
+const int kShakeFrames = 6;
 
 template <typename... Components>
 class CollisionSystem : public System<Components...> {

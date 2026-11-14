@@ -134,7 +134,7 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file, c
 
             if (symbol == 'S') {    // spawner
                 em.AddComponent(id, ECSEngine::SpawnComponent{
-                    id, "star", starId, 30, 30, 20 
+                    id, "star", starId, 60, 120, 20 
                 });
             }   
         }
@@ -181,13 +181,13 @@ int main(int argc, char* argv[]) {
 
     ECSEngine::CollisionComponent playerC{};
     playerC.staticEntity = 0;
-    playerC.collisionBox = {{12, 13}, 41, 51};
+    playerC.collisionBox = {{18, 20}, 61, 76};
     playerC.previousCollisionBox = playerC.collisionBox;
     playerC.previousCollisionBox.topLeft += playerSpawn;
     em.AddComponent(playerId, playerC);
 
     em.AddComponent(playerId, ECSEngine::SpriteComponent{
-        playerSprite, {{0, 0}, 64, 64}, true
+        playerSprite, {{0, 0}, 96, 96}, true
     });
     em.AddComponent(playerId, ECSEngine::InputComponent(playerId));
     em.AddComponent(playerId, ECSEngine::RespawnComponent{playerSpawn});

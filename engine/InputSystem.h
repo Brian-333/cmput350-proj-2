@@ -8,12 +8,12 @@
 
 namespace ECSEngine {
 
-const float kMaxRunVelocity = 15;
-const float kDashVelocity = 50;
-const float kJumpVelocity = 25;
-const float kWallJumpVelocity = 10;
-const float kGroundRunAcceleration = 5;
-const float kAirRunAcceleration = 4;
+const float kMaxRunVelocity = 7;
+const float kDashVelocity = 18;
+const float kJumpVelocity = 13;
+const float kWallJumpVelocity = 7;
+const float kGroundRunAcceleration = 1;
+const float kAirRunAcceleration = 0.7f;
 const int kDashInterval = 60;   // frames between dashes (1 second at 60 fps)
 const int kDashFrames = 10;     // frames a dash lasts (gravity off, no speed clamp)
 
