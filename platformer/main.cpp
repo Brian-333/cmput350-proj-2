@@ -38,11 +38,9 @@ struct mapTile {
     ECSEngine::Rect box;
 };
 
-void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
+void LoadMap(Engine& engine, const std::string& path, const std::string& file, const ECSEngine::SpriteID starId) {
     auto &em = engine.GetEntityManager();
     auto &sm = engine.GetSpriteManager();
-
-    auto starId = sm.RegisterTexture(path + "spritesheet-tiles-default.png", {{640, 320}, 64, 64});
 
     std::ifstream loadedMap(path + file);
 
@@ -160,14 +158,16 @@ int main(int argc, char* argv[]) {
     soundM.RegisterSound(gResourcePath + "footstep_grass_003.ogg", "playerLand", 50.f);
     soundM.RegisterSound(gResourcePath + "footstep_snow_001.ogg", "wallSlide", 50.f);
 
-    // Load maps
-    LoadMap(engine, gResourcePath, "sky.map");
-    LoadMap(engine, gResourcePath, "world.map");
-
-    // Place player
     auto& em = engine.GetEntityManager();
     auto& spriteM = engine.GetSpriteManager();
+    auto& sm = engine.GetSystemManager();
+    auto starSpriteId = spriteM.RegisterTexture(gResourcePath + "spritesheet-tiles-default.png", {{640, 320}, 64, 64});
 
+    // Load maps
+    LoadMap(engine, gResourcePath, "sky.map", starSpriteId);
+    LoadMap(engine, gResourcePath, "world.map", starSpriteId);
+
+    // Place player
     ECSEngine::Point2D playerSpawn({832, 512});
 
     auto playerSprite = spriteM.RegisterTexture(
@@ -188,9 +188,29 @@ int main(int argc, char* argv[]) {
 
     em.AddComponent(playerId, ECSEngine::SpriteComponent{
         playerSprite, {{0, 0}, 64, 64}, true
-});
+    });
     em.AddComponent(playerId, ECSEngine::InputComponent(playerId));
     em.AddComponent(playerId, ECSEngine::RespawnComponent{playerSpawn});
+
+    // Place a star
+    ECSEngine::Point2D starSpawn({512, 192});
+    auto starId = em.CreateEntity("star");
+    em.AddComponent(starId, ECSEngine::LocationComponent{starSpawn});
+    em.AddComponent(starId, ECSEngine::MovementComponent{{0, 0}});
+
+    ECSEngine::CollisionComponent starC{};
+    starC.staticEntity = 0;
+    starC.collisionBox = {{12, 13}, 40, 38};
+    starC.previousCollisionBox = starC.collisionBox;
+    starC.previousCollisionBox.topLeft += starSpawn;
+    starC.collectable = 1;
+    em.AddComponent(starId, starC);
+
+    em.AddComponent(starId, ECSEngine::SpriteComponent{
+        starSpriteId, {{0, 0}, 64, 64}, true
+    });
+    
+
 
     // Setup score component
     ECSEngine::ScoreComponent sc{};
@@ -222,7 +242,6 @@ int main(int argc, char* argv[]) {
     });
 
     // Add all systems
-    auto& sm = engine.GetSystemManager();
     sm.AddSystem(std::make_unique<ECSEngine::CollisionLateSystem<COMPONENTS>>());
     sm.AddSystem(std::make_unique<ECSEngine::InputSystem<COMPONENTS>>());
     sm.AddSystem(std::make_unique<ECSEngine::GravitySystem<COMPONENTS>>());

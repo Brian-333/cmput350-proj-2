@@ -9,3 +9,24 @@
 
 **Reflection:** TODO (Damon)
 
+### Ceiling, wall and fallback collision checks in `engine/CollisionSystem.h` (Claude, Anthropic)
+**Prompt (Damon):** "since i have completed the ground check, fill in the other checks for me in my same style while keeping things simple and easy to follow"
+
+**What was generated:** the `onCeiling`, `onRightWall` and `onLeftWall` checks after Damon's ground check, modelled on it, and the fallback `else` that pushes the entity out along the smaller overlap when it was already overlapping a tile last frame. The code is marked with an `// AI assistance (Claude) ...` comment. Damon later added the star bounce (`kStarBounce`) to these branches himself.
+
+**Reflection:** TODO (Damon)
+
+### Dynamic vs dynamic collision checks in `engine/CollisionSystem.h` (Claude, Anthropic)
+**Prompt (Damon):** "since I already processed collisions for the dynamic vs static entities, fill in the dynamic vs dynamic ones for me using my same style. It shouldnt vary too much probably."
+
+**What was generated:** inside Damon's dynamic vs dynamic loop (after his `overlapBox` setup): the real-collision check, the star collect (add to score, play `"starCollect"`, remove the star), and the star vs star bounce (swap velocities scaled by `kStarBounce`, push apart along the smaller overlap). Also the `IsValid(id)` check before the landing sound, which stops the code from using an entity that was just collected. Marked with an `// AI assistance (Claude) ...` comment.
+
+**Reflection:** TODO (Damon)
+
+### Screen shake in the ceiling and wall checks in `engine/CollisionSystem.h` (Claude, Anthropic)
+**Prompt (Damon):** "ok now that ive done it for the ground check, copy my logic to the other 3"
+
+**What was generated:** copies of Damon's ground-hit screen shake block in the ceiling, right wall and left wall checks, changed to use `lastFrameCeiling`/`lastFrameRightWall`/`lastFrameLeftWall` and the matching velocity axis (y for the ceiling, x for the walls).
+
+**Reflection:** TODO (Damon)
+

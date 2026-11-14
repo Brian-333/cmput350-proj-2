@@ -2,6 +2,7 @@
 #define MATHUTIL_H
 
 #include <iostream>
+#include <algorithm>
 
 namespace ECSEngine {
 
@@ -61,6 +62,34 @@ struct Circle {
 struct Rect {
     Point2D topLeft;
     float width, height;
+
+    Rect &operator&=(const Rect &other) {
+        float left = std::max(topLeft.x, other.topLeft.x);
+        float top = std::max(topLeft.y, other.topLeft.y);
+        float right = std::min(topLeft.x + width, other.topLeft.x + other.width);
+        float bot = std::min(topLeft.y + height, other.topLeft.y + other.height);
+
+        // kinda confusing because we work in bottom right of grid but top < bot actually means the opposite of the wording
+        // bottom will be a larger number if the rect is allowed
+        if (left > right || top > bot) {  
+            width = 0;
+            height = 0;
+            return *this;
+        }
+        topLeft = {left, top};
+        width = right - left;
+        height = bot - top;
+        return *this;
+    }
+
+    bool Intersect(const Rect &other) const {
+        Rect output = *this;
+        output &= other;
+        if (output.width > 0 && output.height > 0) {    // using && for player on floor edge case
+            return true;
+        } 
+        return false;
+    }
 };
 
 [[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Rect& r) {
