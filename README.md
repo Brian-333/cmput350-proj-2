@@ -53,5 +53,41 @@
 - `engine/InputSystem.h`: `kJumpVelocity` 25 to 13, `kMaxRunVelocity` 15 to 7, `kGroundRunAcceleration` 5 to 1, `kAirRunAcceleration` 4 to 0.7, `kDashVelocity` 50 to 18, `kWallJumpVelocity` 10 to 7 (kept equal to the max run speed so the speed clamp doesn't cut wall jumps short).
 - `platformer/main.cpp`: player sprite drawn at 96x96 instead of 64x64 (1.5x), collision box scaled to match as `{{18, 20}, 61, 76}`; star spawner first spawn after 60 frames, then every 120 frames instead of every 30.
 
+### Camera system in `engine/CameraSystem.h` (Cursor)
+**Prompt (Brian):** "Based on my implementation of the lab and the requirement How should the @engine/CameraSystem.h and CameraSystem be implemented", then "Implement it for me please", then "Can this be simplfied and also does it align with the current implementation of windowManager?"
+
+**What was generated:** the `CameraSystem::Run` body, based on Brian's lab 9 camera follower and limited to the x-axis. The camera stays still while the player is inside `softExclusion`, eases toward the player by `speed` between the soft and hard zones, and snaps to the `hardExclusion` edge so the player never enters the outer 10% of the screen. `CameraShake` is added only to the drawn center. The follow-up prompt simplified it to set the view through `WindowManager::SetWorldRect`, which is the call that sets both the view and the scale. Marked with a `// Written with help of Cursor.` comment.
+
+### Sprite system in `engine/SpriteSystem.h` (Cursor)
+**Prompt (Brian):** "Now how to do @engine/SpriteSystem.h from my lab 8 following the same pdf spec", then "Implement it in @engine/SpriteSystem.h", and later "There is weird edge on top of my stars when rendered"
+
+**What was generated:** the `SpriteSystem::Run` body, based on Brian's lab 8 sprite transform. It scales each sprite's texture rectangle into its `bounds`, offsets it by the entity location, and converts world-space sprites to window coordinates. The later fix rounds the draw position to whole pixels. Stars at fractional positions were picking up the bottom row of the tile above them in the sprite sheet. Marked with a `// Written with help of Cursor.` comment.
+
+### Engine loop, event processing and debug drawing in `engine/ECSEngine.h` (Cursor)
+**Prompt (Brian):** the `ECSEngine` section of the spec, then "Check my current implementation", "how to deal with InputComponent", "Explain setKey", "Check my debug drawer now" and "how to set ~ for debug"
+
+**What was generated:** Brian wrote `Run`, `ProcessEvents` and `DebugDraw`, and Cursor reviewed them. It caught a pause check that was backwards (so the systems never ran) and a range-for in `DebugDraw` that used `cbegin(), cend()` (the comma operator) instead of iterating the entity manager. It suggested the `setKey` lambda that copies key presses and releases into every `InputComponent`, and the `Scan::Grave` check that toggles debug drawing. Marked with `// Written with help of Cursor` comments.
+
+### Sprite manager and its test in `engine/SpriteManager.cpp` and `engine/EngineTest.cpp` (Cursor)
+**Prompt (Brian):** "Is my implementation of RegisterTexture correct", "How do I implement getSprite" and "Write a really short test for engine test"
+
+**What was generated:** review comments on `RegisterTexture`. Brian changed it to apply `sourceRect` and make a new sprite on every call instead of reusing the first sprite with that texture. Cursor also suggested the `GetSprite` lookup with a fallback for bad IDs and wrote `TestSpriteManager` (marked with a `// This test is written with help of Cursor AI.` comment).
+
+### Bug fixes from terminal errors (Cursor)
+**Prompt (Brian):** pasted terminal output from failed runs, e.g. the `SoundManager` volume assert failing and `mutex lock failed: Invalid argument` when closing the game.
+
+**What was generated:**
+- `engine/SoundManager.h/.cpp` and `engine/SpriteManager.h/.cpp`: the fallback `sf::Sound`, `sf::Music`, `sf::Texture` and `sf::Sprite` were moved from function-local `static` objects to class members. The statics were destroyed after SFML had shut down, which crashed the game on exit.
+- `engine/EngineTest.cpp`: the sound test volume changed from 10 to 50. SFML stores volume as `volume * 0.01f`, so 10 came back as about 9.999999 and failed the `==` check.
+- Missing `.map` files in `build/assets` were fixed by re-running `cmake -S . -B build` (no code change).
+
+### Docstrings and spec checks (Cursor)
+**Prompt (Brian):** "Properly docstring all engine files like the format in @engine/SoundManager.cpp" 
+
+**What was generated:** the `/** ... @param ... @return */` docstrings on the classes and functions in `engine/` (comments only, no code changes). 
+
+### Reflection (Brian)
+I mostly used Cursor as a reviewer while building the engine. For the managers and the engine loop, I wrote the code myself and asked Cursor to check it against the spec or explain compiler errors, which caught bugs such as the backwards pause check and the comma-operator loop. For the camera and sprite systems, I had already done the logic in labs 8 and 9, so I had Cursor port my lab code into the ECS systems and then asked it to simplify the result to match our `WindowManager`. It was most useful for SFML 3 problems I didn't know about, like the exit crash from static SFML objects and the texture bleeding on the stars. Every suggestion was checked by building and running the game and the engine tests.
+
 ### Reflection (Damon)
 I found AI to be very useful for the project to do some of the tedious work. I worked on a lot of the game implementation and systems for dealing with jumping and collisions. For a lot of these systems they followed the pattern of doing 1 check and then doing a similar check 3 more times with very slightly different logic. I was able to do the first check on my own in order to learn how the systems work and then quickly get AI to fill in the rest, while not missing out on much learning. It was also useful for debugging at the very end (although we didn't have too much to debug). For quality, I had it mimic my code style so that I would be able to understand it well. It did not write anything which I was not able to decipher. It was also very successful for debugging at the end.
