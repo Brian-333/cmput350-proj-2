@@ -10,6 +10,7 @@ We split the project the same way as our previous project: Brian built the engin
 - `ECSEngine`: the main loop at 60 fps, event processing that writes key states into every `InputComponent`, and collision box debug drawing (toggled with the `` ` `` key)
 - `SpriteSystem` (scaled drawing in world or screen space, rounded to whole pixels) and `CameraSystem` (x-axis follow with the 10% / 10-30% / center 40% zones, fixed y, applying and removing `CameraShake`)
 - Engine docstrings, build setup and the GitHub build workflow
+- `Pack.h` was copied from "given code" in lab 8. It complies with warning that I do not know how to fix.
 
 ### Damon Grant (game)
 - `MovementSystem`, `CollisionLateSystem` (the spec's CollisionSystemUpdate) and `GravitySystem` (falling faster than rising, faster falling while holding down, wall slide with its sound, max fall speed, gravity turned off during a dash)
