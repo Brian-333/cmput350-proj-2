@@ -26,7 +26,7 @@ public:
      * @param engine The engine view used to access the entity manager.
      * @return kContinue to keep the engine running.
      */
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 
         // we only need the score component
@@ -45,13 +45,13 @@ public:
                 }
 
                 auto& sprite = em.template GetComponent<SpriteComponent>(score.digitID[j]);
-                sprite.textureID = j == 2 ? score.digitTextureID[(score.score / 100) % 10] :
-                    j == 1 ? score.digitTextureID[(score.score / 10) % 10] :
-                    score.digitTextureID[score.score % 10];
+                sprite.textureID = j == 2   ? score.digitTextureID[(score.score / 100) % 10]
+                                   : j == 1 ? score.digitTextureID[(score.score / 10) % 10]
+                                            : score.digitTextureID[score.score % 10];
             }
         }
 
-        return kContinue; 
+        return kContinue;
     }
 };
 

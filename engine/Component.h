@@ -12,8 +12,7 @@ namespace ECSEngine {
 template <typename T>
 class ComponentStorage {
 public:
-    ComponentStorage() : mValid() {
-    }
+    ComponentStorage() : mValid() {}
 
     /**
      * Store a copy of a component, reusing a freed slot if one exists.
@@ -99,9 +98,7 @@ public:
      * Get the number of live components.
      * @return The number of stored components minus the freed slots.
      */
-    std::size_t size() const {
-        return mStorage.size() - mFreeList.size();
-    }
+    std::size_t size() const { return mStorage.size() - mFreeList.size(); }
     std::vector<T> mStorage;
     std::vector<bool> mValid;       // Quickly track if a component is valid
     std::vector<size_t> mFreeList;  // Avoid scanning for free slots

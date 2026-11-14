@@ -17,13 +17,14 @@ void SoundManager::RegisterSound(const std::string& soundPath, const std::string
  * @param soundName The name of the sound.
  * @param volume The volume of the sound.
  */
-void SoundManager::RegisterSound(const std::string& soundPath, const std::string& soundName, float volume) {
+void SoundManager::RegisterSound(const std::string& soundPath, const std::string& soundName,
+                                 float volume) {
     if (mSoundBuffers.contains(soundName)) {
         std::cerr << "Warning: Overwriting sound file: " << soundName << std::endl;
     } else {
         mSoundBuffers[soundName] = sf::SoundBuffer();
     }
-    
+
     if (!mSoundBuffers[soundName].loadFromFile(soundPath)) {
         std::cerr << "Warning: Failed to load sound file: " << soundPath << std::endl;
     }
@@ -81,7 +82,8 @@ void SoundManager::RegisterMusic(const std::string& musicPath, const std::string
  * @param musicName The name of the music.
  * @param volume The volume of the music.
  */
-void SoundManager::RegisterMusic(const std::string& musicPath, const std::string& musicName, float volume) {
+void SoundManager::RegisterMusic(const std::string& musicPath, const std::string& musicName,
+                                 float volume) {
     mMusicPaths[musicName] = musicPath;
     mMusicVolumes[musicName] = volume;
 }

@@ -117,9 +117,9 @@ template <typename... Components>
 ECSEngine<Components...>::ECSEngine(unsigned int width, unsigned int height,
                                     const std::string& name)
     : mWindowManager(width, height, name), running(true), step(false), debug(0) {
-        std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
-        window->setFramerateLimit(60);
-    }
+    std::shared_ptr<sf::RenderWindow> window = mWindowManager.GetWindow();
+    window->setFramerateLimit(60);
+}
 
 template <typename... Components>
 ECSEngine<Components...>::~ECSEngine() {}

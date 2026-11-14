@@ -9,7 +9,8 @@ namespace ECSEngine {
  * @param title The title of the window.
  */
 WindowManager::WindowManager(unsigned int width, unsigned int height, const std::string& title)
-    : mWindow(std::make_shared<sf::RenderWindow>(sf::VideoMode({width, height}), title)), mWorldUnitsPerPixel(1.0f) {}
+    : mWindow(std::make_shared<sf::RenderWindow>(sf::VideoMode({width, height}), title)),
+      mWorldUnitsPerPixel(1.0f) {}
 
 /**
  * Get the window.
@@ -22,7 +23,7 @@ std::shared_ptr<sf::RenderWindow> WindowManager::GetWindow() const { return mWin
  * @return A rectangle at (0, 0) with the window's size in pixels.
  */
 Rect WindowManager::GetWindowBounds() const {
-    return Rect({0,0}, mWindow->getSize().x, mWindow->getSize().y);
+    return Rect({0, 0}, mWindow->getSize().x, mWindow->getSize().y);
 }
 
 /**
@@ -69,11 +70,8 @@ void WindowManager::DebugFrameRect(const Rect& r, int red, int green, int blue, 
  * @return The rectangle in world coordinates.
  */
 Rect WindowManager::WindowToWorld(const Rect& rect) const {
-    return Rect(
-        WindowToWorld(rect.topLeft),
-        rect.width * mWorldUnitsPerPixel,
-        rect.height * mWorldUnitsPerPixel
-    );
+    return Rect(WindowToWorld(rect.topLeft), rect.width * mWorldUnitsPerPixel,
+                rect.height * mWorldUnitsPerPixel);
 }
 
 /**
@@ -82,10 +80,8 @@ Rect WindowManager::WindowToWorld(const Rect& rect) const {
  * @return The point in world coordinates.
  */
 Point2D WindowManager::WindowToWorld(const Point2D& pt) const {
-    return Point2D(
-        pt.x * mWorldUnitsPerPixel + mWorldCameraRect.topLeft.x,
-        pt.y * mWorldUnitsPerPixel + mWorldCameraRect.topLeft.y
-    );
+    return Point2D(pt.x * mWorldUnitsPerPixel + mWorldCameraRect.topLeft.x,
+                   pt.y * mWorldUnitsPerPixel + mWorldCameraRect.topLeft.y);
 }
 
 /**
@@ -121,11 +117,7 @@ Point2D WindowManager::WorldToWindow(const Point2D& pt) const {
 void WindowManager::SetCamera(const Point2D& worldPt, const Point2D& screenPt) {
     // pWorld - pWindow * mWorldUnitsPerPixel + mWindowSize * 0.5f * mWorldUnitsPerPixel;
     Point2D newTopLeft = worldPt - mWorldUnitsPerPixel * screenPt;
-    mWorldCameraRect = Rect(
-        newTopLeft,
-        mWorldCameraRect.width,
-        mWorldCameraRect.height
-    );
+    mWorldCameraRect = Rect(newTopLeft, mWorldCameraRect.width, mWorldCameraRect.height);
 }
 
 /**
@@ -161,11 +153,9 @@ void WindowManager::SetWorldCenter(const Point2D& worldCenter) {
  * @param worldUnitsPerPixel The number of world units per window pixel.
  */
 void WindowManager::SetWorldScale(float worldUnitsPerPixel) {
-    mWorldCameraRect = Rect(
-        mWorldCameraRect.topLeft,
-        mWorldCameraRect.width / mWorldUnitsPerPixel * worldUnitsPerPixel,
-        mWorldCameraRect.height / mWorldUnitsPerPixel * worldUnitsPerPixel
-    );
+    mWorldCameraRect = Rect(mWorldCameraRect.topLeft,
+                            mWorldCameraRect.width / mWorldUnitsPerPixel * worldUnitsPerPixel,
+                            mWorldCameraRect.height / mWorldUnitsPerPixel * worldUnitsPerPixel);
     mWorldUnitsPerPixel = worldUnitsPerPixel;
 }
 

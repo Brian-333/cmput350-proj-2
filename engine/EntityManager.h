@@ -24,7 +24,7 @@ public:
      * @param name The type name of the entity.
      * @return The ID of the new entity.
      */
-    [[nodiscard]] EntityID CreateEntity(const std::string& name) { 
+    [[nodiscard]] EntityID CreateEntity(const std::string& name) {
         if (mFreeEntityIndices.empty()) {
             EntityID id = mEntities.size();
             mIsFree.push_back(false);
@@ -44,7 +44,7 @@ public:
             }
             return id;
         }
-     }
+    }
 
     /**
      * Remove an entity and all of its components. Its ID may be reused later.
@@ -85,7 +85,8 @@ public:
         assert(HasComponent<T>(entity));
 
         static constexpr auto COMPONENT_TYPE_INDEX = Pack<Components...>::template index<T>;
-        std::get<COMPONENT_TYPE_INDEX>(mComponentStorages).remove(mComponentIndices[entity][COMPONENT_TYPE_INDEX]);
+        std::get<COMPONENT_TYPE_INDEX>(mComponentStorages)
+            .remove(mComponentIndices[entity][COMPONENT_TYPE_INDEX]);
         mComponentIndices[entity][COMPONENT_TYPE_INDEX] = kNullComponent;
     }
 
@@ -111,7 +112,8 @@ public:
     T& GetComponent(EntityID entity) {
         assert(HasComponent<T>(entity));
         static constexpr auto COMPONENT_TYPE_INDEX = Pack<Components...>::template index<T>;
-        return std::get<COMPONENT_TYPE_INDEX>(mComponentStorages)[mComponentIndices[entity][COMPONENT_TYPE_INDEX]];
+        return std::get<COMPONENT_TYPE_INDEX>(
+            mComponentStorages)[mComponentIndices[entity][COMPONENT_TYPE_INDEX]];
     }
 
     /**
@@ -129,15 +131,15 @@ public:
      * @param id The ID of the entity.
      * @return True if the entity exists and has not been removed.
      */
-    bool IsValid(EntityID id) const {return ValidEntity(id); }
+    bool IsValid(EntityID id) const { return ValidEntity(id); }
 
     // TODO: Implement iterators for the entity manager
     using tEntity = std::vector<Entity>;
-	using const_iterator = tEntity::const_iterator;
-	const_iterator cbegin() const { return mEntities.begin(); }
-	const_iterator cend() const { return mEntities.end(); }
-	const_iterator begin() { return mEntities.begin(); }
-	const_iterator end() { return mEntities.end(); }
+    using const_iterator = tEntity::const_iterator;
+    const_iterator cbegin() const { return mEntities.begin(); }
+    const_iterator cend() const { return mEntities.end(); }
+    const_iterator begin() { return mEntities.begin(); }
+    const_iterator end() { return mEntities.end(); }
 
 private:
     /**
@@ -159,7 +161,7 @@ private:
             RemoveComponent<T>(entity);
         }
     }
-    
+
     static constexpr size_t numComponents = sizeof...(Components);
 
     std::vector<Entity> mEntities;
@@ -168,7 +170,6 @@ private:
 
     std::vector<std::array<size_t, numComponents>> mComponentIndices;
     std::tuple<ComponentStorage<Components>...> mComponentStorages;
-
 };
 
 }  // namespace ECSEngine

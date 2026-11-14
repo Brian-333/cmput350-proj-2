@@ -38,9 +38,10 @@ struct mapTile {
     ECSEngine::Rect box;
 };
 
-void LoadMap(Engine& engine, const std::string& path, const std::string& file, const ECSEngine::SpriteID starId) {
-    auto &em = engine.GetEntityManager();
-    auto &sm = engine.GetSpriteManager();
+void LoadMap(Engine& engine, const std::string& path, const std::string& file,
+             const ECSEngine::SpriteID starId) {
+    auto& em = engine.GetEntityManager();
+    auto& sm = engine.GetSpriteManager();
 
     std::ifstream loadedMap(path + file);
 
@@ -54,7 +55,7 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file, c
     std::unordered_map<char, ECSEngine::SpriteID> spriteIds;
 
     // Getting first line (the mapType)
-    std::string line; 
+    std::string line;
     std::getline(loadedMap, line);
     std::istringstream iss(line);
     std::string skip;
@@ -69,7 +70,9 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file, c
 
         iss >> symbol;
 
-        if (symbol == "map") { break ;} // Have all the tiles collected
+        if (symbol == "map") {
+            break;
+        }  // Have all the tiles collected
 
         iss >> filePath;
 
@@ -108,15 +111,17 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file, c
         for (int col = 0; col < cols; ++col) {
             char symbol = line[col];
 
-            if (symbol == '.' || spriteIds.count(symbol) == 0) { continue; }    // nothing here
+            if (symbol == '.' || spriteIds.count(symbol) == 0) {
+                continue;
+            }  // nothing here
 
             ECSEngine::Point2D pos = {oLeft + col * tWidth, oTop + row * tHeight};
 
             ECSEngine::EntityID id = em.CreateEntity("tile");
-            em.AddComponent(id, ECSEngine::LocationComponent{pos}); 
-            em.AddComponent(id, ECSEngine::SpriteComponent{
-                spriteIds[symbol], ECSEngine::Rect{{0, 0}, tWidth, tHeight}, true
-            });
+            em.AddComponent(id, ECSEngine::LocationComponent{pos});
+            em.AddComponent(
+                id, ECSEngine::SpriteComponent{spriteIds[symbol],
+                                               ECSEngine::Rect{{0, 0}, tWidth, tHeight}, true});
 
             if (mapType == 2) {
                 ECSEngine::CollisionComponent c{};
@@ -132,11 +137,9 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file, c
                 em.AddComponent(id, c);
             }
 
-            if (symbol == 'S') {    // spawner
-                em.AddComponent(id, ECSEngine::SpawnComponent{
-                    id, "star", starId, 60, 120, 20 
-                });
-            }   
+            if (symbol == 'S') {  // spawner
+                em.AddComponent(id, ECSEngine::SpawnComponent{id, "star", starId, 60, 120, 20});
+            }
         }
     }
 }
@@ -161,7 +164,8 @@ int main(int argc, char* argv[]) {
     auto& em = engine.GetEntityManager();
     auto& spriteM = engine.GetSpriteManager();
     auto& sm = engine.GetSystemManager();
-    auto starSpriteId = spriteM.RegisterTexture(gResourcePath + "spritesheet-tiles-default.png", {{640, 320}, 64, 64});
+    auto starSpriteId = spriteM.RegisterTexture(gResourcePath + "spritesheet-tiles-default.png",
+                                                {{640, 320}, 64, 64});
 
     // Load maps
     LoadMap(engine, gResourcePath, "sky.map", starSpriteId);
@@ -171,8 +175,7 @@ int main(int argc, char* argv[]) {
     ECSEngine::Point2D playerSpawn({832, 512});
 
     auto playerSprite = spriteM.RegisterTexture(
-        gResourcePath + "spritesheet-characters-default.png", {{0, 0}, 128, 128}
-    ); 
+        gResourcePath + "spritesheet-characters-default.png", {{0, 0}, 128, 128});
 
     auto playerId = em.CreateEntity("player");
     em.AddComponent(playerId, ECSEngine::LocationComponent{playerSpawn});
@@ -186,9 +189,7 @@ int main(int argc, char* argv[]) {
     playerC.previousCollisionBox.topLeft += playerSpawn;
     em.AddComponent(playerId, playerC);
 
-    em.AddComponent(playerId, ECSEngine::SpriteComponent{
-        playerSprite, {{0, 0}, 96, 96}, true
-    });
+    em.AddComponent(playerId, ECSEngine::SpriteComponent{playerSprite, {{0, 0}, 96, 96}, true});
     em.AddComponent(playerId, ECSEngine::InputComponent(playerId));
     em.AddComponent(playerId, ECSEngine::RespawnComponent{playerSpawn});
 
@@ -206,40 +207,36 @@ int main(int argc, char* argv[]) {
     starC.collectable = 1;
     em.AddComponent(starId, starC);
 
-    em.AddComponent(starId, ECSEngine::SpriteComponent{
-        starSpriteId, {{0, 0}, 64, 64}, true
-    });
-    
-
+    em.AddComponent(starId, ECSEngine::SpriteComponent{starSpriteId, {{0, 0}, 64, 64}, true});
 
     // Setup score component
     ECSEngine::ScoreComponent sc{};
     sc.score = 0;
-    for (int i = 0; i < 10; ++i) {   // register score sprites
-        auto score = spriteM.RegisterTexture(
-            gResourcePath + "spritesheet-tiles-default.png", {{832, 832 - i * 64}, 64, 64}
-        );
+    for (int i = 0; i < 10; ++i) {  // register score sprites
+        auto score = spriteM.RegisterTexture(gResourcePath + "spritesheet-tiles-default.png",
+                                             {{832, 832 - i * 64}, 64, 64});
         sc.digitTextureID[i] = score;
     }
     sc.digitID[0] = em.CreateEntity("scoreOnes");
     sc.digitID[1] = em.CreateEntity("scoreTens");
     sc.digitID[2] = em.CreateEntity("scoreHundreds");
 
-    for (int i = 0; i < 3; ++i) {   // register components with score entities
+    for (int i = 0; i < 3; ++i) {  // register components with score entities
         em.AddComponent(sc.digitID[i], ECSEngine::LocationComponent{{90 - i * 40, 10}});
-        em.AddComponent(sc.digitID[i], ECSEngine::SpriteComponent{
-            sc.digitTextureID[0], {{0, 0}, 64, 64}, false
-        });
+        em.AddComponent(sc.digitID[i],
+                        ECSEngine::SpriteComponent{sc.digitTextureID[0], {{0, 0}, 64, 64}, false});
     }
     em.AddComponent(playerId, sc);
-    
+
     // Setup Camera
     auto camera = em.CreateEntity("camera");
     em.AddComponent(camera, ECSEngine::CameraFollower{playerId});
     // TODO: change the exclusion zones to not be hardcoded
-    em.AddComponent(camera, ECSEngine::CameraComponent{
-        {playerSpawn.x, 448.f}, 1.f, {{102.4f, 0.f}, 819.2f, 768}, {{307.2f, 0.f}, 409.6f, 768.f}, 0.05f
-    });
+    em.AddComponent(camera, ECSEngine::CameraComponent{{playerSpawn.x, 448.f},
+                                                       1.f,
+                                                       {{102.4f, 0.f}, 819.2f, 768},
+                                                       {{307.2f, 0.f}, 409.6f, 768.f},
+                                                       0.05f});
 
     // Add all systems
     sm.AddSystem(std::make_unique<ECSEngine::CollisionLateSystem<COMPONENTS>>());

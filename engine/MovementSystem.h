@@ -25,7 +25,7 @@ public:
      * @param engine The engine view used to access the entity manager.
      * @return kContinue to keep the engine running.
      */
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 
         for (const Entity& entity : em) {
@@ -33,7 +33,7 @@ public:
             if (!em.IsValid(id)) {
                 continue;
             }
-            if (!em.template HasComponent<MovementComponent>(id) || 
+            if (!em.template HasComponent<MovementComponent>(id) ||
                 !em.template HasComponent<LocationComponent>(id)) {
                 continue;
             }
@@ -43,7 +43,7 @@ public:
 
             location.loc += movement.velocity;
         }
-        return kContinue; 
+        return kContinue;
     }
 };
 

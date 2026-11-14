@@ -39,7 +39,8 @@ struct GravityComponent {
         : acceleration(acceleration), disabledTimer(disabledTimer) {}
     Point2D acceleration;  // Acceleration in pixels per second squared
     int disabledTimer;     // Frames left with gravity turned off (e.g. during a dash)
-    bool wallSliding = false;  // was the entity sliding down a wall last frame (used to play the slide sound once)
+    bool wallSliding =
+        false;  // was the entity sliding down a wall last frame (used to play the slide sound once)
 };
 
 // location for respawning

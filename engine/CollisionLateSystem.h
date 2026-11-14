@@ -2,9 +2,9 @@
 
 // also known as collisionsystemupdate
 
+#include "CollisionComponent.h"
 #include "ECSEngine.h"
 #include "LocationComponent.h"
-#include "CollisionComponent.h"
 
 namespace ECSEngine {
 
@@ -28,8 +28,7 @@ public:
      * @param engine The engine view used to access the entity manager.
      * @return kContinue to keep the engine running.
      */
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
-        
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 
         for (const Entity& entity : em) {
@@ -49,7 +48,7 @@ public:
             collision.previousCollisionBox.topLeft += location.loc;
         }
 
-        return kContinue; 
+        return kContinue;
     }
 };
 
