@@ -28,6 +28,9 @@ void SoundManager::RegisterSound(const std::string& soundPath, const std::string
         std::cerr << "Warning: Failed to load sound file: " << soundPath << std::endl;
     }
     mSoundVolumes[soundName] = volume;
+    if (!mSounds.contains(soundName)) {
+        mSounds.emplace(soundName, sf::Sound(mSoundBuffers[soundName]));
+    }
 }
 
 /**
@@ -36,15 +39,13 @@ void SoundManager::RegisterSound(const std::string& soundPath, const std::string
  * @return The sound.
  */
 sf::Sound& SoundManager::GetSound(const std::string& soundName) {
-    static sf::SoundBuffer dummyBuffer;
-    static sf::Sound dummySound(dummyBuffer);
-    if (!mSoundBuffers.contains(soundName)) {
+    auto it = mSounds.find(soundName);
+    if (it == mSounds.end()) {
         std::cerr << "Warning: Sound file not found: " << soundName << std::endl;
-        return dummySound;
+        return mFallbackSound;
     }
-    dummySound.setBuffer(mSoundBuffers.at(soundName));
-    dummySound.setVolume(mSoundVolumes.at(soundName));
-    return dummySound;
+    it->second.setVolume(mSoundVolumes.at(soundName));
+    return it->second;
 }
 
 /**
@@ -91,12 +92,11 @@ void SoundManager::RegisterMusic(const std::string& musicPath, const std::string
  * @return The music.
  */
 sf::Music& SoundManager::GetMusic(const std::string& musicName) {
-    static sf::Music dummyMusic;
-    if (!dummyMusic.openFromFile(mMusicPaths[musicName])) {
+    if (!mMusic.openFromFile(mMusicPaths[musicName])) {
         std::cerr << "Failed to load music file: " << mMusicPaths[musicName] << std::endl;
     }
-    dummyMusic.setVolume(mMusicVolumes[musicName]);
-    return dummyMusic;
+    mMusic.setVolume(mMusicVolumes[musicName]);
+    return mMusic;
 }
 
 /**

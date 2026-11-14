@@ -26,11 +26,14 @@ public:
 private:
     std::unordered_map<std::string, float> mSoundVolumes;
     std::unordered_map<std::string, sf::SoundBuffer> mSoundBuffers;
-    // const int mMaxSounds = 15;
-    // int mNextSoundIndex;
-    // std::vector<sf::Sound> mSounds;
+    sf::SoundBuffer mFallbackBuffer;
+    // Sounds are owned here, not as function statics, so they are destroyed with the engine
+    // before SFML's audio device. They must be declared after the buffers they reference.
+    std::unordered_map<std::string, sf::Sound> mSounds;
+    sf::Sound mFallbackSound{mFallbackBuffer};
     std::unordered_map<std::string, float> mMusicVolumes;
     std::unordered_map<std::string, std::string> mMusicPaths;
+    sf::Music mMusic;
 };
 
 }  // namespace ECSEngine
