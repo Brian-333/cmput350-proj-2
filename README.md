@@ -30,3 +30,8 @@
 
 **Reflection:** TODO (Damon)
 
+### Gravity component construction fix in `engine/SpawnSystem.h` (Claude, Anthropic)
+**Prompt (Damon):** "try to build it for me and look, also resolve the syntax"
+
+**What was generated:** a one-line change to how spawned stars get their gravity: `GravityComponent{{0.f, 0.5f}}` became `GravityComponent(Point2D(0.f, 0.5f))`. The brace version was ambiguous to Apple clang (it could also be read as building a `GravityComponent` from two numbers).
+
