@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <array>
+#include <string>
 #include <tuple>
 
 // An entity can have any component it is templated with,

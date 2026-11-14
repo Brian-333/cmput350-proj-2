@@ -1,8 +1,8 @@
 #ifndef MATHUTIL_H
 #define MATHUTIL_H
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 namespace ECSEngine {
 
@@ -13,7 +13,7 @@ struct Point2D {
     Point2D(float x = 0, float y = 0) : x(x), y(y) {}
     Point2D(int x, int y) : x(x), y(y) {}
 
-    Point2D &operator+=(const Point2D &other) {
+    Point2D& operator+=(const Point2D& other) {
         x += other.x;
         y += other.y;
         return *this;
@@ -32,8 +32,6 @@ struct Point2D {
 [[maybe_unused]] static Point2D operator+(const Point2D& lhs, const Point2D& rhs) {
     return Point2D(lhs.x + rhs.x, lhs.y + rhs.y);
 }
-
-
 
 [[maybe_unused]] static Point2D operator-(const Point2D& lhs, const Point2D& rhs) {
     return Point2D(lhs.x - rhs.x, lhs.y - rhs.y);
@@ -63,15 +61,15 @@ struct Rect {
     Point2D topLeft;
     float width, height;
 
-    Rect &operator&=(const Rect &other) {
+    Rect& operator&=(const Rect& other) {
         float left = std::max(topLeft.x, other.topLeft.x);
         float top = std::max(topLeft.y, other.topLeft.y);
         float right = std::min(topLeft.x + width, other.topLeft.x + other.width);
         float bot = std::min(topLeft.y + height, other.topLeft.y + other.height);
 
-        // kinda confusing because we work in bottom right of grid but top < bot actually means the opposite of the wording
-        // bottom will be a larger number if the rect is allowed
-        if (left > right || top > bot) {  
+        // kinda confusing because we work in bottom right of grid but top < bot actually means the
+        // opposite of the wording bottom will be a larger number if the rect is allowed
+        if (left > right || top > bot) {
             width = 0;
             height = 0;
             return *this;
@@ -82,12 +80,12 @@ struct Rect {
         return *this;
     }
 
-    bool Intersect(const Rect &other) const {
+    bool Intersect(const Rect& other) const {
         Rect output = *this;
         output &= other;
-        if (output.width > 0 && output.height > 0) {    // using && for player on floor edge case
+        if (output.width > 0 && output.height > 0) {  // using && for player on floor edge case
             return true;
-        } 
+        }
         return false;
     }
 };

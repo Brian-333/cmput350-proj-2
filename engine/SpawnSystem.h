@@ -1,11 +1,12 @@
 #pragma once
 
-#include <random>
 #include <cmath>
+#include <random>
+
+#include "CollisionComponent.h"
 #include "ECSEngine.h"
 #include "LocationComponent.h"
 #include "SpawnComponent.h"
-#include "CollisionComponent.h"
 #include "SpriteComponent.h"
 
 namespace ECSEngine {
@@ -20,8 +21,7 @@ public:
         return name;
     }
 
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
-
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 
         // only the spawners have the spawn component
@@ -35,10 +35,10 @@ public:
             auto& spawner = spawners[i];
             auto spawnerId = spawner.entityID;
 
-            if (spawner.totalSpawns <= 0) { // done spawning
+            if (spawner.totalSpawns <= 0) {  // done spawning
                 continue;
             }
-            
+
             spawner.timeToNextSpawn--;
 
             if (spawner.timeToNextSpawn > 0) {
@@ -48,10 +48,10 @@ public:
             // spawner will spawn
             spawner.timeToNextSpawn = spawner.timeBetweenSpawns;
             spawner.totalSpawns--;
-            if (spawner.spawnType == "star" && 
+            if (spawner.spawnType == "star" &&
                 em.template HasComponent<LocationComponent>(spawnerId)) {
                 auto& location = em.template GetComponent<LocationComponent>(spawnerId);
-                
+
                 Point2D starSpawn(location.loc);
                 auto starId = em.CreateEntity("star");
 
@@ -73,18 +73,16 @@ public:
                 em.AddComponent(starId, starC);
 
                 em.AddComponent(starId, GravityComponent(Point2D(0.f, 0.5f)));
-                em.AddComponent(starId, SpriteComponent{
-                    spawner.spawnTextureID, {{0, 0}, 64, 64}, true
-                });
+                em.AddComponent(starId,
+                                SpriteComponent{spawner.spawnTextureID, {{0, 0}, 64, 64}, true});
             }
         }
 
-        return kContinue; 
+        return kContinue;
     }
 
 private:
-    std::mt19937 mRng{std::random_device{}()};   // seeded once, from <random>
+    std::mt19937 mRng{std::random_device{}()};  // seeded once, from <random>
 };
-
 
 }  // namespace ECSEngine

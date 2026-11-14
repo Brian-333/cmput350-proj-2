@@ -47,8 +47,7 @@ public:
                 float viewW = window.width * camera.worldUnitsPerPixel;
                 float viewH = window.height * camera.worldUnitsPerPixel;
                 windowManager.SetWorldRect(
-                    {{center.x - viewW * 0.5f, center.y - viewH * 0.5f}, viewW, viewH}
-                );
+                    {{center.x - viewW * 0.5f, center.y - viewH * 0.5f}, viewW, viewH});
             };
 
             // Measure against the unshaken center. Follow never changes y.
@@ -64,7 +63,8 @@ public:
             Point2D playerWorld = location.loc;
             if (entityManager.template HasComponent<CollisionComponent>(followerId)) {
                 const auto& box =
-                    entityManager.template GetComponent<CollisionComponent>(followerId).collisionBox;
+                    entityManager.template GetComponent<CollisionComponent>(followerId)
+                        .collisionBox;
                 playerWorld += box.topLeft + Point2D(box.width * 0.5f, box.height * 0.5f);
             }
 

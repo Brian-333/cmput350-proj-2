@@ -5,8 +5,7 @@ namespace ECSEngine {
 SpriteID SpriteManager::RegisterTexture(const std::string& texturePath, const Rect& sourceRect) {
     sf::IntRect intRect(
         {static_cast<int>(sourceRect.topLeft.x), static_cast<int>(sourceRect.topLeft.y)},
-        {static_cast<int>(sourceRect.width), static_cast<int>(sourceRect.height)}
-    );
+        {static_cast<int>(sourceRect.width), static_cast<int>(sourceRect.height)});
     if (!mTextures.contains(texturePath)) {
         mTextures[texturePath] = sf::Texture(texturePath);
     }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Keyboard.h"
+#include "CollisionComponent.h"
 #include "ECSEngine.h"
 #include "InputComponent.h"
+#include "Keyboard.h"
 #include "LocationComponent.h"
-#include "CollisionComponent.h"
 
 namespace ECSEngine {
 
@@ -14,8 +14,8 @@ const float kJumpVelocity = 13;
 const float kWallJumpVelocity = 7;
 const float kGroundRunAcceleration = 1;
 const float kAirRunAcceleration = 0.7f;
-const int kDashInterval = 60;   // frames between dashes (1 second at 60 fps)
-const int kDashFrames = 10;     // frames a dash lasts (gravity off, no speed clamp)
+const int kDashInterval = 60;  // frames between dashes (1 second at 60 fps)
+const int kDashFrames = 10;    // frames a dash lasts (gravity off, no speed clamp)
 
 template <typename... Components>
 class InputSystem : public System<Components...> {
@@ -25,10 +25,9 @@ public:
         return name;
     }
 
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
-
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
-        
+
         // only the player has an input component so we don't need to iterate all tiles
         auto& inputs = em.template GetComponentStorage<InputComponent>();
 
@@ -48,22 +47,25 @@ public:
             auto& movement = em.template GetComponent<MovementComponent>(playerId);
             auto& collision = em.template GetComponent<CollisionComponent>(playerId);
 
-            float acceleration = collision.onGround == 1 ? kGroundRunAcceleration : kAirRunAcceleration;
+            float acceleration =
+                collision.onGround == 1 ? kGroundRunAcceleration : kAirRunAcceleration;
             // Handle key inputs
             if (input.keydown[Key::Left]) {
                 movement.velocity.x += -acceleration;
             }
-            if (input.keydown[Key::Right]){
+            if (input.keydown[Key::Right]) {
                 movement.velocity.x += acceleration;
             }
             if (input.keydown[Key::Z] && !input.lastKeydown[Key::Z] && collision.onGround == 1) {
                 movement.velocity.y = -kJumpVelocity;
                 engine->GetSoundManager().GetSound("playerJump").play();
-            } else if (input.keydown[Key::Z] && !input.lastKeydown[Key::Z] && collision.onLeftWall == 1) {
+            } else if (input.keydown[Key::Z] && !input.lastKeydown[Key::Z] &&
+                       collision.onLeftWall == 1) {
                 movement.velocity.y = -kJumpVelocity;
                 movement.velocity.x = kWallJumpVelocity;
                 engine->GetSoundManager().GetSound("playerJump").play();
-            } else if (input.keydown[Key::Z] && !input.lastKeydown[Key::Z] && collision.onRightWall == 1) {
+            } else if (input.keydown[Key::Z] && !input.lastKeydown[Key::Z] &&
+                       collision.onRightWall == 1) {
                 movement.velocity.y = -kJumpVelocity;
                 movement.velocity.x = -kWallJumpVelocity;
                 engine->GetSoundManager().GetSound("playerJump").play();
@@ -73,35 +75,39 @@ public:
             if (input.lastDash < kDashInterval) {
                 input.lastDash++;
             }
-            if (input.keydown[Key::C] && !input.lastKeydown[Key::C] && input.lastDash >= kDashInterval) {
+            if (input.keydown[Key::C] && !input.lastKeydown[Key::C] &&
+                input.lastDash >= kDashInterval) {
                 float direction = 0;
                 if (collision.onLeftWall == 1 && collision.onGround == 0) {
-                    direction = 1;      // on a wall in the air: dash outward, away from it
+                    direction = 1;  // on a wall in the air: dash outward, away from it
                 } else if (collision.onRightWall == 1 && collision.onGround == 0) {
                     direction = -1;
                 } else if (input.keydown[Key::Left]) {
-                    direction = -1;     // otherwise dash where the player is pressing (even into a wall)
+                    direction =
+                        -1;  // otherwise dash where the player is pressing (even into a wall)
                 } else if (input.keydown[Key::Right]) {
                     direction = 1;
                 } else if (movement.velocity.x < 0) {
-                    direction = -1;     // no key held: dash the way the player is already moving
+                    direction = -1;  // no key held: dash the way the player is already moving
                 } else {
                     direction = 1;
                 }
 
                 movement.velocity.x = direction * kDashVelocity;
-                movement.velocity.y = 0;    // dashes are left/right only
+                movement.velocity.y = 0;  // dashes are left/right only
                 input.lastDash = 0;
 
                 // turn gravity off for the dash so it travels in a straight line
                 if (em.template HasComponent<GravityComponent>(playerId)) {
-                    em.template GetComponent<GravityComponent>(playerId).disabledTimer = kDashFrames;
+                    em.template GetComponent<GravityComponent>(playerId).disabledTimer =
+                        kDashFrames;
                 }
             }
-            // while dashing, skip the run speed clamp and friction below so the dash isn't cancelled
+            // while dashing, skip the run speed clamp and friction below so the dash isn't
+            // cancelled
             bool dashing = input.lastDash < kDashFrames;
             // --- end AI-generated dash ---
-            
+
             if (!dashing && movement.velocity.x < -kMaxRunVelocity) {
                 movement.velocity.x = -kMaxRunVelocity;
             }
@@ -117,7 +123,7 @@ public:
 
             input.lastKeydown = input.keydown;
         }
-        return kContinue; 
+        return kContinue;
     }
 };
 

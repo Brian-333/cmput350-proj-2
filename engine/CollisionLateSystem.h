@@ -2,9 +2,9 @@
 
 // also known as collisionsystemupdate
 
+#include "CollisionComponent.h"
 #include "ECSEngine.h"
 #include "LocationComponent.h"
-#include "CollisionComponent.h"
 
 namespace ECSEngine {
 
@@ -16,8 +16,7 @@ public:
         return name;
     }
 
-    tSystemReturn Run(EngineView<Components...>* engine) override { 
-        
+    tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& em = engine->GetEntityManager();
 
         for (const Entity& entity : em) {
@@ -37,7 +36,7 @@ public:
             collision.previousCollisionBox.topLeft += location.loc;
         }
 
-        return kContinue; 
+        return kContinue;
     }
 };
 

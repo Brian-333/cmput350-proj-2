@@ -1,14 +1,15 @@
 #include <cassert>
 
-#include "EntityManager.h"
 #include "Component.h"
+#include "EntityManager.h"
 #include "SoundManager.h"
 #include "SpriteManager.h"
 
 void TestEntityManager() {
     ECSEngine::EntityManager<int, float, char> entityManager;
     ECSEngine::EntityID entity = entityManager.CreateEntity("entity1");
-    ECSEngine::ComponentStorage<float>& floatComponentStorage = entityManager.GetComponentStorage<float>();
+    ECSEngine::ComponentStorage<float>& floatComponentStorage =
+        entityManager.GetComponentStorage<float>();
 
     // Check that the float component storage is empty
     assert(floatComponentStorage.size() == 0);
@@ -70,7 +71,7 @@ void TestSoundManager() {
         sf::sleep(sf::milliseconds(10));
     }
     assert(currentSound.getVolume() == 100);
-    
+
     soundManager.RegisterSound("../assets/sfx_gem.ogg", "gem", 50);
     currentSound = soundManager.GetSound("gem");
     currentSound.play();
@@ -85,17 +86,16 @@ void TestSoundManager() {
 void TestSpriteManager() {
     ECSEngine::SpriteManager spriteManager;
     ECSEngine::Rect rect{{0, 0}, 16, 16};
-    ECSEngine::SpriteID id0 = spriteManager.RegisterTexture(
-        "../assets/spritesheet-tiles-default.png", rect);
-    ECSEngine::SpriteID id1 = spriteManager.RegisterTexture(
-        "../assets/spritesheet-tiles-default.png", {{16, 0}, 16, 16});
+    ECSEngine::SpriteID id0 =
+        spriteManager.RegisterTexture("../assets/spritesheet-tiles-default.png", rect);
+    ECSEngine::SpriteID id1 =
+        spriteManager.RegisterTexture("../assets/spritesheet-tiles-default.png", {{16, 0}, 16, 16});
     assert(id0 == 0);
     assert(id1 == 1);
     assert(&spriteManager.GetSprite(id0) != &spriteManager.GetSprite(id1));
     assert(spriteManager.GetSprite(id0).getTextureRect().size.x == 16);
     std::cout << "SpriteManager test passed" << std::endl;
 }
-
 
 int main(int argc, char* argv[]) {
     (void)argc;

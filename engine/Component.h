@@ -9,8 +9,7 @@ namespace ECSEngine {
 template <typename T>
 class ComponentStorage {
 public:
-    ComponentStorage() : mValid() {
-    }
+    ComponentStorage() : mValid() {}
     std::size_t store(const T& item) {
         if (mFreeList.empty()) {
             mStorage.push_back(item);
@@ -39,9 +38,7 @@ public:
         }
     }
 
-    bool valid(std::size_t index) const {
-        return index < mStorage.size() && !mValid[index];
-    }
+    bool valid(std::size_t index) const { return index < mStorage.size() && !mValid[index]; }
 
     void remove(std::size_t index) {
         assert(valid(index));
@@ -62,9 +59,7 @@ public:
         return mStorage[index];
     }
 
-    std::size_t size() const {
-        return mStorage.size() - mFreeList.size();
-    }
+    std::size_t size() const { return mStorage.size() - mFreeList.size(); }
     std::vector<T> mStorage;
     std::vector<bool> mValid;       // Quickly track if a component is valid
     std::vector<size_t> mFreeList;  // Avoid scanning for free slots
